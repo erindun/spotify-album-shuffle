@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import theme from './theme';
+import { Box, Button, Flex, Heading, Image } from '@chakra-ui/react';
 import axios from 'axios';
 import SpotifyPlayer from 'react-spotify-web-playback';
 
@@ -46,7 +48,7 @@ const Player: React.FC = () => {
         'http://localhost:5000/api/albums'
       );
       const albums = response.data.map(
-        (album: any) =>
+        (album) =>
           ({
             uri: album.uri,
             name: album.name,
@@ -62,23 +64,61 @@ const Player: React.FC = () => {
     fetchAlbumsList();
   }, []);
 
+  // Chakra-UI theme values can't be passed to
+  // `SpotifyPlayer`, so extract the colors directly
+  const {
+    spotifyBlack,
+    spotifyMedGray,
+    spotifyLightGray,
+    spotifyGreen,
+  } = theme.colors;
+
   return (
     currentAlbum && (
-      <>
-        <img style={{ width: '400px' }} src={currentAlbum.artworkUrl} />
+      <Flex
+        direction="column"
+        alignItems="center"
+        justify="end"
+        style={{ width: '100vw', minHeight: '100vh' }}
+      >
+        <Heading color="white" whiteSpace="pre-line" textAlign="center">
+          {`${currentAlbum.artist}\n${currentAlbum.name}`}
+        </Heading>
+        <Flex alignItems="center" justify="" pb={150} pt={10}>
+          <Button
+            onClick={() => setQueueIndex(queueIndex - 1)}
+            disabled={queueIndex === 0}
+          >
+            Previous
+          </Button>
+          <Image
+            style={{ width: '500px' }}
+            src={currentAlbum.artworkUrl}
+            alt=""
+            px={50}
+          />
+          <Button
+            onClick={() => setQueueIndex(queueIndex + 1)}
+            disabled={
+              albumsList.length ? queueIndex === albumsList.length - 1 : true
+            }
+          >
+            Next
+          </Button>
+        </Flex>
         <SpotifyPlayer
           token={accessToken}
           uris={currentAlbum.uri}
           styles={{
-            bgColor: '#212121',
-            color: '#b3b3b3',
-            trackNameColor: '#b3b3b3',
-            sliderHandleColor: '#b3b3b3',
-            sliderColor: '#1db954',
-            sliderTrackColor: '#535353',
+            bgColor: spotifyBlack,
+            color: spotifyLightGray,
+            trackNameColor: spotifyLightGray,
+            sliderHandleColor: spotifyLightGray,
+            sliderColor: spotifyGreen,
+            sliderTrackColor: spotifyMedGray,
           }}
         />
-      </>
+      </Flex>
     )
   );
 };
