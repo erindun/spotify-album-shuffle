@@ -32,8 +32,11 @@
   },
   "eslintConfig": {
     "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "prettier"
     ]
   },
   "browserslist": {
@@ -50,6 +53,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.1.6",
+    "eslint-config-prettier": "^7.0.0",
     "husky": "^4.3.5",
     "lint-staged": "^10.5.3",
     "prettier": "^2.2.1"
