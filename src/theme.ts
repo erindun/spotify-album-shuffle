@@ -8,4 +8,7 @@ export default extendTheme({
     spotifyLightGray: '#b3b3b3',
     spotifyGreen: '#1db954',
   },
+  config: {
+    initialColorMode: 'dark',
+  },
 });

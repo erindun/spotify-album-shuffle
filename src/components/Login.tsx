@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { Flex, Button } from '@chakra-ui/react';
+import { fetchAuthUrl } from '../utils/api';
 
 const Login: React.FC = () => {
   const [authUrl, setAuthUrl] = useState('');
 
   // effect: fetch authorization URL
   useEffect(() => {
-    const fetchAuthUrl = async () => {
-      const response = await axios.get<string>(
-        'http://localhost:5000/api/auth'
-      );
-      setAuthUrl(response.data);
-    };
+    async function fetch() {
+      try {
+        const url = await fetchAuthUrl();
+        setAuthUrl(url);
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-    fetchAuthUrl();
+    fetch();
   }, []);
 
-  return !authUrl ? <h1>asdf</h1> : <a href={authUrl}>Login with Spotify</a>;
+  return !authUrl ? null : (
+    <Flex minH="100vh" alignItems="center" justify="center" direction="column">
+      <a href={authUrl}>
+        <Button
+          size="lg"
+          px="3em"
+          py="1.5em"
+          rounded="48px"
+          bg="spotifyGreen"
+          to={authUrl}
+        >
+          Login with Spotify
+        </Button>
+      </a>
+    </Flex>
+  );
 };
 
 export default Login;

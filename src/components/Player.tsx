@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import theme from './theme';
-import { Box, Button, Flex, Heading, Image } from '@chakra-ui/react';
-import axios from 'axios';
+import theme from '../theme';
+import { Button, Flex, Heading, Image, Spinner } from '@chakra-ui/react';
 import SpotifyPlayer from 'react-spotify-web-playback';
+import { fetchAccessToken, fetchAlbumsList } from '../utils/api';
+import useLocalStorage from '../utils/useLocalStorage';
 
-interface Album {
+export interface Album {
   uri: string;
   name: string;
   artist: string;
@@ -13,9 +14,13 @@ interface Album {
 
 const Player: React.FC = () => {
   const [accessToken, setAccessToken] = useState('');
-  const [albumsList, setAlbumsList] = useState<Album[]>([]);
+  const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
+    'albumsList',
+    []
+  );
   const [queueIndex, setQueueIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
 
   const currentAlbum = useMemo(() => {
     if (queueIndex < 0) {
@@ -27,42 +32,47 @@ const Player: React.FC = () => {
     }
   }, [queueIndex, albumsList]);
 
+  /** Shuffles an array in-place. */
+  function shuffle<T>(array: T[]): void {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
   // effect: fetch API access token
   useEffect(() => {
-    const fetchAccessToken = async () => {
-      const response = await axios.get<string>(
-        'http://localhost:5000/api/token'
-      );
-      setAccessToken(response.data);
-    };
+    async function fetch() {
+      try {
+        const token = await fetchAccessToken();
+        setAccessToken(token);
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-    fetchAccessToken();
+    fetch();
   }, []);
 
   // effect: fetch list of albums in user's library
   useEffect(() => {
-    const fetchAlbumsList = async () => {
+    async function fetch() {
+      setFetchAlbums(false);
       setLoading(true);
-
-      const response = await axios.get<any[]>(
-        'http://localhost:5000/api/albums'
-      );
-      const albums = response.data.map(
-        (album) =>
-          ({
-            uri: album.uri,
-            name: album.name,
-            artist: album.artists[0].name,
-            artworkUrl: album.images[0].url,
-          } as Album)
-      );
-
-      setAlbumsList(albums);
+      try {
+        const albums = await fetchAlbumsList();
+        shuffle(albums);
+        setAlbumsList(albums);
+      } catch (err) {
+        console.error(err);
+      }
       setLoading(false);
-    };
+    }
 
-    fetchAlbumsList();
-  }, []);
+    if (fetchAlbums) {
+      fetch();
+    }
+  }, [setAlbumsList, fetchAlbums]);
 
   // Chakra-UI theme values can't be passed to
   // `SpotifyPlayer`, so extract the colors directly
@@ -74,52 +84,51 @@ const Player: React.FC = () => {
   } = theme.colors;
 
   return (
-    currentAlbum && (
-      <Flex
-        direction="column"
-        alignItems="center"
-        justify="end"
-        style={{ width: '100vw', minHeight: '100vh' }}
+    <Flex minH="100vh" align="center" direction="column">
+      <Button
+        onClick={() => setFetchAlbums(true)}
+        w={200}
+        alignSelf="end"
+        mt={10}
+        mr={5}
+        disabled={loading}
       >
-        <Heading color="white" whiteSpace="pre-line" textAlign="center">
-          {`${currentAlbum.artist}\n${currentAlbum.name}`}
-        </Heading>
-        <Flex alignItems="center" justify="" pb={150} pt={10}>
-          <Button
-            onClick={() => setQueueIndex(queueIndex - 1)}
-            disabled={queueIndex === 0}
-          >
-            Previous
-          </Button>
-          <Image
-            style={{ width: '500px' }}
-            src={currentAlbum.artworkUrl}
-            alt=""
-            px={50}
-          />
-          <Button
-            onClick={() => setQueueIndex(queueIndex + 1)}
-            disabled={
-              albumsList.length ? queueIndex === albumsList.length - 1 : true
-            }
-          >
-            Next
-          </Button>
-        </Flex>
-        <SpotifyPlayer
-          token={accessToken}
-          uris={currentAlbum.uri}
-          styles={{
-            bgColor: spotifyBlack,
-            color: spotifyLightGray,
-            trackNameColor: spotifyLightGray,
-            sliderHandleColor: spotifyLightGray,
-            sliderColor: spotifyGreen,
-            sliderTrackColor: spotifyMedGray,
-          }}
-        />
+        {!loading ? 'Reload album library' : <Spinner />}
+      </Button>
+      <Heading color="white" whiteSpace="pre-line" textAlign="center">
+        {`${currentAlbum?.artist}
+        ${currentAlbum?.name}`}
+      </Heading>
+      <Flex alignItems="center" pb={150} pt={10} h={600}>
+        <Button
+          onClick={() => setQueueIndex(queueIndex - 1)}
+          disabled={queueIndex === 0}
+        >
+          Previous album
+        </Button>
+        <Image w={500} src={currentAlbum?.artworkUrl} alt="" px={50} />
+        <Button
+          onClick={() => setQueueIndex(queueIndex + 1)}
+          disabled={
+            albumsList.length ? queueIndex === albumsList.length - 1 : true
+          }
+        >
+          Next album
+        </Button>
       </Flex>
-    )
+      <SpotifyPlayer
+        token={accessToken}
+        uris={currentAlbum?.uri}
+        styles={{
+          bgColor: spotifyBlack,
+          color: spotifyLightGray,
+          trackNameColor: spotifyLightGray,
+          sliderHandleColor: spotifyLightGray,
+          sliderColor: spotifyGreen,
+          sliderTrackColor: spotifyMedGray,
+        }}
+      />
+    </Flex>
   );
 };
 
