@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import theme from '../theme';
 import {
   Box,
@@ -11,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer from 'react-spotify-web-playback';
-import { fetchAlbumsList } from '../utils/api';
+import { fetchAlbumsList, fetchAccessToken, logout } from '../utils/api';
 import useLocalStorage from '../utils/useLocalStorage';
 
 export interface Album {
@@ -21,16 +22,13 @@ export interface Album {
   artworkUrl: string;
 }
 
-interface PlayerProps {
-  accessToken: string;
-}
-
-const Player: React.FC<PlayerProps> = ({ accessToken }) => {
+const Player: React.FC = () => {
   const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
     'albumsList',
     []
   );
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
+  const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
 
@@ -51,6 +49,25 @@ const Player: React.FC<PlayerProps> = ({ accessToken }) => {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
+
+  // effect: retrieve an access token from the server
+  // each hour, and upon loading the player
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const token = await fetchAccessToken();
+        setAccessToken(token);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetch();
+    const interval = setInterval(() => {
+      fetch();
+    }, 1000 * 60 * 60);
+    return () => clearInterval(interval);
+  }, []);
 
   // effect: fetch list of albums in user's library
   useEffect(() => {
@@ -78,6 +95,12 @@ const Player: React.FC<PlayerProps> = ({ accessToken }) => {
     setLoading(true);
   }
 
+  const history = useHistory();
+  function onLogout() {
+    history.push('/');
+    logout();
+  }
+
   // Chakra-UI theme values can't be passed to
   // `SpotifyPlayer`, so extract the colors directly
   const {
@@ -89,22 +112,29 @@ const Player: React.FC<PlayerProps> = ({ accessToken }) => {
 
   return (
     <Box minH="100vh" align="center">
-      <Button
-        onClick={onReloadClicked}
-        w={200}
-        mt={10}
-        mb={5}
-        disabled={loading}
-      >
-        {loading ? (
-          'loading...'
-        ) : (
-          <>
-            reload and reshuffle
-            <RepeatIcon ml={2} />
-          </>
-        )}
-      </Button>
+      <Flex justify="center">
+        <Button
+          onClick={onReloadClicked}
+          w={200}
+          mt={10}
+          mb={5}
+          mr={2.5}
+          disabled={loading}
+        >
+          {loading ? (
+            'loading...'
+          ) : (
+            <>
+              reload and reshuffle
+              <RepeatIcon ml={3} />
+            </>
+          )}
+        </Button>
+        <Button onClick={onLogout} mt={10} mb={5} ml={3} bgColor="spotifyGreen">
+          log out
+        </Button>
+      </Flex>
+
       <Box>
         {!accessToken || loading ? (
           <Spinner mt={300} />

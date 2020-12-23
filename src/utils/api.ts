@@ -3,41 +3,25 @@ import { Album } from '../components/Player';
 
 const apiUrl = 'http://localhost:5000/api';
 
-async function fetch<T>(url: string) {
-  let attempted = 0;
-  do {
-    try {
-      const response = await axios.get<T>(url);
-      return response;
-    } catch (err) {
-      if (attempted) throw err;
-      else {
-        refreshAccessToken();
-      }
-    }
-  } while (!attempted++);
-
-  return Promise.reject();
+export async function fetchAccessToken(): Promise<string> {
+  const response = await axios.get<string>(`${apiUrl}/auth/token`, {
+    withCredentials: true,
+  });
+  return response.data;
 }
 
 export async function fetchAuthUrl(): Promise<string> {
-  const response = await fetch<string>(`${apiUrl}/auth`);
+  const response = await axios.get<string>(`${apiUrl}/auth`);
   return response.data;
 }
 
-export async function fetchAccessToken(): Promise<string> {
-  const response = await axios.get<string>(`${apiUrl}/auth/token`);
-  return response.data;
-}
-
-export async function refreshAccessToken(): Promise<string> {
-  const response = await fetch<string>(`${apiUrl}/auth/refresh`);
-  return response.data;
+export async function logout(): Promise<void> {
+  await axios.get(`${apiUrl}/auth/logout`, { withCredentials: true });
 }
 
 export async function fetchAlbumsList(): Promise<Album[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const response = await fetch<any[]>(`${apiUrl}/albums`);
+  const response = await axios.get<any[]>(`${apiUrl}/albums`);
   const albums = response.data.map(
     (album) =>
       ({
