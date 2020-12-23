@@ -28,8 +28,13 @@ const App: React.FC = () => {
         <Route exact path="/">
           {accessToken ? <Redirect to="/player" /> : <Login />}
         </Route>
-        <Route exact path="/player">
-          <Player accessToken={accessToken} />
+        {accessToken && (
+          <Route exact path="/player">
+            <Player accessToken={accessToken} />
+          </Route>
+        )}
+        <Route to="/:">
+          <Redirect to="/" />
         </Route>
       </Box>
     </Router>
