@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from './theme';
+import 'focus-visible/dist/focus-visible';
 
 ReactDOM.render(
   <React.StrictMode>
