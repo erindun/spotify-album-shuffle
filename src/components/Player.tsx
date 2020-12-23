@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import theme from '../theme';
-import { Button, Flex, Heading, Image, Spinner } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Text,
+  Image,
+  Spinner,
+} from '@chakra-ui/react';
+import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer from 'react-spotify-web-playback';
-import { fetchAccessToken, fetchAlbumsList } from '../utils/api';
+import { fetchAlbumsList } from '../utils/api';
 import useLocalStorage from '../utils/useLocalStorage';
 
 export interface Album {
@@ -12,13 +21,16 @@ export interface Album {
   artworkUrl: string;
 }
 
-const Player: React.FC = () => {
-  const [accessToken, setAccessToken] = useState('');
+interface PlayerProps {
+  accessToken: string;
+}
+
+const Player: React.FC<PlayerProps> = ({ accessToken }) => {
   const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
     'albumsList',
     []
   );
-  const [queueIndex, setQueueIndex] = useState(0);
+  const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const [loading, setLoading] = useState(false);
   const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
 
@@ -40,20 +52,6 @@ const Player: React.FC = () => {
     }
   }
 
-  // effect: fetch API access token
-  useEffect(() => {
-    async function fetch() {
-      try {
-        const token = await fetchAccessToken();
-        setAccessToken(token);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    fetch();
-  }, []);
-
   // effect: fetch list of albums in user's library
   useEffect(() => {
     async function fetch() {
@@ -74,6 +72,12 @@ const Player: React.FC = () => {
     }
   }, [setAlbumsList, fetchAlbums]);
 
+  function onReloadClicked() {
+    setFetchAlbums(true);
+    setQueueIndex(0);
+    setLoading(true);
+  }
+
   // Chakra-UI theme values can't be passed to
   // `SpotifyPlayer`, so extract the colors directly
   const {
@@ -84,51 +88,77 @@ const Player: React.FC = () => {
   } = theme.colors;
 
   return (
-    <Flex minH="100vh" align="center" direction="column">
+    <Box minH="100vh" align="center">
       <Button
-        onClick={() => setFetchAlbums(true)}
+        onClick={onReloadClicked}
         w={200}
-        alignSelf="end"
         mt={10}
-        mr={5}
+        mb={5}
         disabled={loading}
       >
-        {!loading ? 'Reload album library' : <Spinner />}
+        {loading ? (
+          'loading...'
+        ) : (
+          <>
+            reload and reshuffle
+            <RepeatIcon ml={2} />
+          </>
+        )}
       </Button>
-      <Heading color="white" whiteSpace="pre-line" textAlign="center">
-        {`${currentAlbum?.artist}
-        ${currentAlbum?.name}`}
-      </Heading>
-      <Flex alignItems="center" pb={150} pt={10} h={600}>
-        <Button
-          onClick={() => setQueueIndex(queueIndex - 1)}
-          disabled={queueIndex === 0}
-        >
-          Previous album
-        </Button>
-        <Image w={500} src={currentAlbum?.artworkUrl} alt="" px={50} />
-        <Button
-          onClick={() => setQueueIndex(queueIndex + 1)}
-          disabled={
-            albumsList.length ? queueIndex === albumsList.length - 1 : true
-          }
-        >
-          Next album
-        </Button>
-      </Flex>
-      <SpotifyPlayer
-        token={accessToken}
-        uris={currentAlbum?.uri}
-        styles={{
-          bgColor: spotifyBlack,
-          color: spotifyLightGray,
-          trackNameColor: spotifyLightGray,
-          sliderHandleColor: spotifyLightGray,
-          sliderColor: spotifyGreen,
-          sliderTrackColor: spotifyMedGray,
-        }}
-      />
-    </Flex>
+      <Box>
+        {!accessToken || loading ? (
+          <Spinner mt={300} />
+        ) : (
+          <>
+            <Text>now playing</Text>
+            <Heading color="white" textAlign="center">
+              {currentAlbum?.name}
+            </Heading>
+            <Text>by</Text>
+            <Heading color="white" textAlign="center">
+              {currentAlbum?.artist}
+            </Heading>
+
+            <Flex justify="center" align="center" pb={150} pt={10} h={600}>
+              <Button
+                onClick={() => setQueueIndex(queueIndex - 1)}
+                disabled={queueIndex === 0}
+              >
+                <ArrowBackIcon mr={2} />
+                previous album
+              </Button>
+              <Image w={500} src={currentAlbum?.artworkUrl} alt="" px={50} />
+              <Button
+                onClick={() => setQueueIndex(queueIndex + 1)}
+                disabled={
+                  albumsList.length
+                    ? queueIndex === albumsList.length - 1
+                    : true
+                }
+              >
+                next album
+                <ArrowForwardIcon ml={2} />
+              </Button>
+            </Flex>
+            <Box position="fixed" bottom={0} minW="100vw">
+              <SpotifyPlayer
+                token={accessToken}
+                uris={currentAlbum?.uri}
+                autoPlay
+                styles={{
+                  bgColor: spotifyBlack,
+                  color: spotifyLightGray,
+                  trackNameColor: spotifyLightGray,
+                  sliderHandleColor: spotifyLightGray,
+                  sliderColor: spotifyGreen,
+                  sliderTrackColor: spotifyMedGray,
+                }}
+              />
+            </Box>
+          </>
+        )}
+      </Box>
+    </Box>
   );
 };
 

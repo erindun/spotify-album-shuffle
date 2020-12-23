@@ -30,7 +30,7 @@ const Login: React.FC = () => {
           bg="spotifyGreen"
           to={authUrl}
         >
-          Login with Spotify
+          log in with Spotify
         </Button>
       </a>
     </Flex>

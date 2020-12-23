@@ -12,12 +12,17 @@ async function fetch<T>(url: string) {
     } catch (err) {
       if (attempted) throw err;
       else {
-        // TODO refresh access token
+        refreshAccessToken();
       }
     }
   } while (!attempted++);
 
   return Promise.reject();
+}
+
+export async function refreshAccessToken(): Promise<string> {
+  const response = await fetch<string>(`${apiUrl}/auth/refresh`);
+  return response.data;
 }
 
 export async function fetchAuthUrl(): Promise<string> {
