@@ -20,13 +20,18 @@ async function fetch<T>(url: string) {
   return Promise.reject();
 }
 
-export async function refreshAccessToken(): Promise<string> {
-  const response = await fetch<string>(`${apiUrl}/auth/refresh`);
+export async function fetchAuthUrl(): Promise<string> {
+  const response = await fetch<string>(`${apiUrl}/auth`);
   return response.data;
 }
 
-export async function fetchAuthUrl(): Promise<string> {
-  const response = await fetch<string>(`${apiUrl}/auth`);
+export async function fetchAccessToken(): Promise<string> {
+  const response = await axios.get<string>(`${apiUrl}/auth/token`);
+  return response.data;
+}
+
+export async function refreshAccessToken(): Promise<string> {
+  const response = await fetch<string>(`${apiUrl}/auth/refresh`);
   return response.data;
 }
 
@@ -44,9 +49,4 @@ export async function fetchAlbumsList(): Promise<Album[]> {
   );
 
   return albums;
-}
-
-export async function fetchAccessToken(): Promise<string> {
-  const response = await axios.get<string>(`${apiUrl}/token`);
-  return response.data;
 }
