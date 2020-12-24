@@ -103,7 +103,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
           w={200}
           mt={10}
           mb={5}
-          mr={2.5}
+          mr={3}
           disabled={loading}
         >
           {loading ? (
@@ -134,15 +134,23 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
               {currentAlbum.artist}
             </Heading>
 
-            <Flex justify="center" align="center" pb={150} pt={10} h={600}>
+            <Flex justify="center" align="center" pb={{ sm: 250, md: 150 }} h={600}>
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
+                ml={30}
               >
-                <ArrowBackIcon mr={2} />
-                previous album
+                <ArrowBackIcon mr={{ sm: 0, md: 2 }} />
+                <Text display={{ sm: 'none', md: 'block' }}>
+                  previous album
+                </Text>
               </Button>
-              <Image w={500} src={currentAlbum?.artworkUrl} alt="" px={50} />
+              <Image
+                w={{ sm: 350, md: 500 }}
+                src={currentAlbum?.artworkUrl}
+                alt=""
+                px={{ sm: 25, md: 50 }}
+              />
               <Button
                 onClick={() => setQueueIndex(queueIndex + 1)}
                 disabled={
@@ -150,9 +158,10 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
                     ? queueIndex === albumsList.length - 1
                     : true
                 }
+                mr={30}
               >
-                next album
-                <ArrowForwardIcon ml={2} />
+                <Text display={{ sm: 'none', md: 'block' }}>next album</Text>
+                <ArrowForwardIcon ml={{ sm: 0, md: 2 }} />
               </Button>
             </Flex>
             <Box position="fixed" bottom={0} minW="100vw">
