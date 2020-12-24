@@ -5,15 +5,14 @@ import { Album } from '../components/Player';
 const apiUrl = 'http://localhost:5000/api';
 
 export async function fetchAccessToken(): Promise<AccessToken | null> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const response = await axios.get<any>(`${apiUrl}/auth/token`, {
+  const response = await axios.get<AccessToken | null>(`${apiUrl}/auth/token`, {
     withCredentials: true,
   });
   let accessToken: AccessToken | null = null;
   if (response.data) {
     accessToken = {
       value: response.data.value,
-      expiresAt: response.data.expires_at
+      expiresAt: response.data.expiresAt,
     } as AccessToken;
   }
   return accessToken;

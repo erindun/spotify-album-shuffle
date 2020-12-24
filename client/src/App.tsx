@@ -1,18 +1,26 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
+import React, { useEffect, useCallback, useMemo } from 'react';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import Player from './components/Player';
 import Login from './components/Login';
 import { fetchAccessToken } from './utils/api';
+import useLocalStorage from './utils/useLocalStorage';
 import { AccessToken } from 'common';
 
 const App: React.FC = () => {
-  const [accessToken, setAccessToken] = useState<AccessToken | null>(null);
+  const [accessToken, setAccessToken] = useLocalStorage<AccessToken | null>(
+    'accessToken',
+    null
+  );
   const tokenExpiresIn = useMemo(() => {
     if (accessToken && accessToken.expiresAt) {
-      console.log(accessToken.expiresAt);
-      const val = accessToken.expiresAt.getTime() - new Date().getTime();
-      if (val > 0){
+      const val = Date.parse(accessToken.expiresAt) - new Date().getTime();
+      if (val > 0) {
         return val;
       }
     }
@@ -27,13 +35,15 @@ const App: React.FC = () => {
     } catch (err) {
       console.error(err);
     }
-  }, []);
+  }, [setAccessToken]);
 
   // effect: retrieve an access token
   // from the server when the app starts
   useEffect(() => {
-    fetch();
-  }, [fetch]);
+    if (!(accessToken || tokenExpiresIn)) {
+      fetch();
+    }
+  }, [fetch, accessToken, tokenExpiresIn]);
 
   // effect: get a new access token
   // from the server when it expires
@@ -49,19 +59,21 @@ const App: React.FC = () => {
   return (
     <Router>
       <Box bg="spotifyDarkGray">
-        <Route exact path="/">
-          {accessToken ? <Redirect to="/player" /> : <Login />}
-          <Login />
-        </Route>
-        {accessToken && (
-          <Route exact path="/player">
-            <Player
-              accessToken={accessToken.value}
-              deleteAccessToken={() => setAccessToken(null)}
-            />
+        <Switch>
+          <Route exact path="/">
+            {accessToken ? <Redirect to="/player" /> : <Login />}
+            <Login />
           </Route>
-        )}
-        <Redirect to="/" />
+          {accessToken && (
+            <Route exact path="/player">
+              <Player
+                accessToken={accessToken.value}
+                deleteAccessToken={() => setAccessToken(null)}
+              />
+            </Route>
+          )}
+          <Redirect to="/" />
+        </Switch>
       </Box>
     </Router>
   );

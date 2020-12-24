@@ -121,17 +121,17 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
       </Flex>
 
       <Box>
-        {!accessToken || loading ? (
+        {!(accessToken && currentAlbum) || loading ? (
           <Spinner mt={300} />
         ) : (
           <>
             <Text>now playing</Text>
             <Heading color="white" textAlign="center">
-              {currentAlbum?.name}
+              {currentAlbum.name}
             </Heading>
             <Text>by</Text>
             <Heading color="white" textAlign="center">
-              {currentAlbum?.artist}
+              {currentAlbum.artist}
             </Heading>
 
             <Flex justify="center" align="center" pb={150} pt={10} h={600}>
@@ -158,7 +158,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
             <Box position="fixed" bottom={0} minW="100vw">
               <SpotifyPlayer
                 token={accessToken}
-                uris={currentAlbum?.uri}
+                uris={currentAlbum.uri}
                 autoPlay
                 styles={{
                   bgColor: spotifyBlack,

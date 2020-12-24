@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import connectPgSession from 'connect-pg-simple';
 import spotifyWebApi from 'spotify-web-api-node';
+import { AccessToken } from 'common';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -81,7 +82,7 @@ app.get('/api/auth/token', async (req, res) => {
 
   let tokenValue = spotifyApi.getAccessToken();
   if (sess.refresh_token && sess.expires_at && tokenValue) {
-    if (new Date().getTime() > Date.parse(sess.expires_at)) {
+    if (new Date() > new Date(sess.expires_at)) {
       // if token has expired, refresh it
       const newAccessTokenResponse = await spotifyApi.refreshAccessToken();
       const { access_token, expires_in } = newAccessTokenResponse.body;
@@ -95,8 +96,8 @@ app.get('/api/auth/token', async (req, res) => {
     }
     accessToken = {
       value: tokenValue,
-      expiresAtDateString: sess.expires_at,
-    }
+      expiresAt: sess.expires_at,
+    } as AccessToken;
   }
 
   res.send(accessToken);
