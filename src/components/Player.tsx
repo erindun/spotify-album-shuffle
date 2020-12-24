@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
 import theme from '../theme';
 import {
   Box,
@@ -12,8 +11,9 @@ import {
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer from 'react-spotify-web-playback';
-import { fetchAlbumsList, fetchAccessToken, logout } from '../utils/api';
+import { fetchAlbumsList, logout } from '../utils/api';
 import useLocalStorage from '../utils/useLocalStorage';
+import { useHistory } from 'react-router-dom';
 
 export interface Album {
   uri: string;
@@ -22,13 +22,17 @@ export interface Album {
   artworkUrl: string;
 }
 
-const Player: React.FC = () => {
+interface PlayerProps {
+  accessToken: string;
+  deleteAccessToken: () => void;
+}
+
+const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
   const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
     'albumsList',
     []
   );
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
-  const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
 
@@ -49,25 +53,6 @@ const Player: React.FC = () => {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
-
-  // effect: retrieve an access token from the server
-  // each hour, and upon loading the player
-  useEffect(() => {
-    async function fetch() {
-      try {
-        const token = await fetchAccessToken();
-        setAccessToken(token);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    fetch();
-    const interval = setInterval(() => {
-      fetch();
-    }, 1000 * 60 * 60);
-    return () => clearInterval(interval);
-  }, []);
 
   // effect: fetch list of albums in user's library
   useEffect(() => {
@@ -94,11 +79,11 @@ const Player: React.FC = () => {
     setQueueIndex(0);
     setLoading(true);
   }
-
   const history = useHistory();
-  function onLogout() {
+  async function onLogout() {
+    await logout();
+    deleteAccessToken();
     history.push('/');
-    logout();
   }
 
   // Chakra-UI theme values can't be passed to

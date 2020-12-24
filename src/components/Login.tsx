@@ -7,16 +7,23 @@ const Login: React.FC = () => {
 
   // effect: fetch authorization URL
   useEffect(() => {
+    let mounted = true;
+
     async function fetch() {
       try {
         const url = await fetchAuthUrl();
-        setAuthUrl(url);
+        if (mounted) {
+          setAuthUrl(url);
+        }
       } catch (err) {
         console.error(err);
       }
     }
 
     fetch();
+    return function cleanup() {
+      mounted = false;
+    };
   }, []);
 
   return !authUrl ? null : (

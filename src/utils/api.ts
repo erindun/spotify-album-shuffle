@@ -3,8 +3,9 @@ import { Album } from '../components/Player';
 
 const apiUrl = 'http://localhost:5000/api';
 
-export async function fetchAccessToken(): Promise<string> {
-  const response = await axios.get<string>(`${apiUrl}/auth/token`, {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function fetchAccessToken(): Promise<any> {
+  const response = await axios.get(`${apiUrl}/auth/token`, {
     withCredentials: true,
   });
   return response.data;
@@ -16,7 +17,9 @@ export async function fetchAuthUrl(): Promise<string> {
 }
 
 export async function logout(): Promise<void> {
-  await axios.get(`${apiUrl}/auth/logout`, { withCredentials: true });
+  await axios.get(`${apiUrl}/auth/logout`, {
+    withCredentials: true,
+  });
 }
 
 export async function fetchAlbumsList(): Promise<Album[]> {
