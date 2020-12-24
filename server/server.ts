@@ -6,6 +6,13 @@ import pg from 'pg';
 import connectPgSession from 'connect-pg-simple';
 import spotifyWebApi from 'spotify-web-api-node';
 
+declare module 'express-session' {
+  export interface SessionData {
+    refresh_token: string;
+    expires_at: Date;
+  }
+}
+
 dotenv.config();
 const app = express();
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
@@ -25,7 +32,7 @@ app.use(
     store: new pgSession({
       pool: pool,
     }),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
@@ -49,13 +56,13 @@ const scopes = [
 ];
 
 app.get('/api/auth', (req, res) => {
-  const html = spotifyApi.createAuthorizeURL(scopes);
+  const html = spotifyApi.createAuthorizeURL(scopes, 'state');
   res.send(html);
 });
 
 app.get('/api/auth/callback', async (req, res) => {
   const { code } = req.query;
-  let data = await spotifyApi.authorizationCodeGrant(code);
+  const data = await spotifyApi.authorizationCodeGrant(code as string);
   const { access_token, refresh_token, expires_in } = data.body;
   spotifyApi.setAccessToken(access_token);
   spotifyApi.setRefreshToken(refresh_token);
@@ -71,7 +78,7 @@ app.get('/api/auth/callback', async (req, res) => {
 app.get('/api/auth/token', async (req, res) => {
   const sess = req.session;
   if (sess.refresh_token && sess.expires_at) {
-    if (new Date() > Date.parse(sess.expires_at)) {
+    if (new Date() > sess.expires_at) {
       // if token has expired, refresh it
       const newAccessTokenResponse = await spotifyApi.refreshAccessToken();
       const { access_token, expires_in } = newAccessTokenResponse.body;
@@ -93,13 +100,14 @@ app.get('/api/auth/token', async (req, res) => {
 });
 
 app.get('/api/auth/logout', (req, res) => {
-  req.session.destroy();
-  res.end();
+  req.session.destroy(() => {
+    res.end();
+  });
 });
 
 app.get('/api/albums', async (req, res) => {
   try {
-    let response = await spotifyApi.getMySavedAlbums({
+    const response = await spotifyApi.getMySavedAlbums({
       limit: 50,
       offset: 0,
     });
@@ -107,13 +115,13 @@ app.get('/api/albums', async (req, res) => {
 
     const albums = [];
     for (let i = 0; i < numAlbums; i += 50) {
-      let data = await spotifyApi.getMySavedAlbums({
+      const data = await spotifyApi.getMySavedAlbums({
         limit: 50,
         offset: i,
       });
 
-      let items = data.body.items;
-      for (let item of items) {
+      const items = data.body.items;
+      for (const item of items) {
         albums.push(item.album);
       }
     }
