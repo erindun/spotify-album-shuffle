@@ -1,25 +1,21 @@
-import express from "express";
-import session from "express-session";
-import cors from "cors";
-import dotenv from "dotenv";
-import pg from "pg";
-import connectPgSession from "connect-pg-simple";
-import spotifyWebApi from "spotify-web-api-node";
+import express from 'express';
+import session from 'express-session';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import pg from 'pg';
+import connectPgSession from 'connect-pg-simple';
+import spotifyWebApi from 'spotify-web-api-node';
 
 dotenv.config();
 const app = express();
-app.use(
-  cors(
-    { credentials: true, origin: "http://localhost:3000" },
-  )
-);
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 
 // connect to database
 const pgSession = connectPgSession(session);
 const { Pool } = pg;
 const pool = new Pool({
   user: process.env.PGUSER,
-  host: "localhost",
+  host: 'localhost',
   database: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   port: 5432,
@@ -43,21 +39,21 @@ const spotifyApi = new spotifyWebApi({
   redirectUri: process.env.SPOTIFY_REDIRECT_URI,
 });
 const scopes = [
-  "streaming",
-  "user-read-email",
-  "user-read-private",
-  "user-library-read",
-  "user-library-modify",
-  "user-read-playback-state",
-  "user-modify-playback-state",
+  'streaming',
+  'user-read-email',
+  'user-read-private',
+  'user-library-read',
+  'user-library-modify',
+  'user-read-playback-state',
+  'user-modify-playback-state',
 ];
 
-app.get("/api/auth", (req, res) => {
+app.get('/api/auth', (req, res) => {
   const html = spotifyApi.createAuthorizeURL(scopes);
   res.send(html);
 });
 
-app.get("/api/auth/callback", async (req, res) => {
+app.get('/api/auth/callback', async (req, res) => {
   const { code } = req.query;
   let data = await spotifyApi.authorizationCodeGrant(code);
   const { access_token, refresh_token, expires_in } = data.body;
@@ -69,10 +65,10 @@ app.get("/api/auth/callback", async (req, res) => {
   expires_at.setTime(expires_at.getTime() + expires_in * 1000);
   req.session.expires_at = expires_at;
 
-  res.redirect("http://localhost:3000/player");
+  res.redirect('http://localhost:3000/player');
 });
 
-app.get("/api/auth/token", async (req, res) => {
+app.get('/api/auth/token', async (req, res) => {
   const sess = req.session;
   if (sess.refresh_token && sess.expires_at) {
     if (new Date() > Date.parse(sess.expires_at)) {
@@ -96,12 +92,12 @@ app.get("/api/auth/token", async (req, res) => {
   }
 });
 
-app.get("/api/auth/logout", (req, res) => {
+app.get('/api/auth/logout', (req, res) => {
   req.session.destroy();
   res.end();
 });
 
-app.get("/api/albums", async (req, res) => {
+app.get('/api/albums', async (req, res) => {
   try {
     let response = await spotifyApi.getMySavedAlbums({
       limit: 50,
