@@ -134,7 +134,12 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
               {currentAlbum.artist}
             </Heading>
 
-            <Flex justify="center" align="center" pb={{ sm: 250, md: 150 }} h={600}>
+            <Flex
+              justify="center"
+              align="center"
+              pb={{ sm: 250, md: 150 }}
+              h={600}
+            >
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
@@ -164,7 +169,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
                 <ArrowForwardIcon ml={{ sm: 0, md: 2 }} />
               </Button>
             </Flex>
-            <Box position="fixed" bottom={0} minW="100vw">
+            <Box position="fixed" bottom={0} minW={{ sm: '99vw', md: '100vw' }} ml={{ sm: '0.25em', md: '0em' }}>
               <SpotifyPlayer
                 token={accessToken}
                 uris={currentAlbum.uri}
