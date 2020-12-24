@@ -169,7 +169,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
                 <ArrowForwardIcon ml={{ sm: 0, md: 2 }} />
               </Button>
             </Flex>
-            <Box position="fixed" bottom={0} minW={{ sm: '99vw', md: '100vw' }} ml={{ sm: '0.25em', md: '0em' }}>
+            <Box position="fixed" bottom={0} minW={{ sm: '99vw', md: '100vw' }} ml={{ sm: '0.2em', md: '0em' }}>
               <SpotifyPlayer
                 token={accessToken}
                 uris={currentAlbum.uri}
