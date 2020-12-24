@@ -1,20 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import Player from './components/Player';
 import Login from './components/Login';
 import { fetchAccessToken } from './utils/api';
+import { AccessToken } from 'common';
 
 const App: React.FC = () => {
-  const [accessToken, setAccessToken] = useState('');
-  const [expiresIn, setExpiresIn] = useState(0);
+  const [accessToken, setAccessToken] = useState<AccessToken | null>(null);
+  const tokenExpiresIn = useMemo(() => {
+    if (accessToken && accessToken.expiresAt) {
+      console.log(accessToken.expiresAt);
+      const val = accessToken.expiresAt.getTime() - new Date().getTime();
+      if (val > 0){
+        return val;
+      }
+    }
+
+    return undefined;
+  }, [accessToken]);
 
   const fetch = useCallback(async () => {
     try {
       const data = await fetchAccessToken();
-      const expiresIn = Date.parse(data.expires_at) - new Date().getTime();
-      setExpiresIn(expiresIn);
-      setAccessToken(data.token);
+      setAccessToken(data);
     } catch (err) {
       console.error(err);
     }
@@ -29,13 +38,13 @@ const App: React.FC = () => {
   // effect: get a new access token
   // from the server when it expires
   useEffect(() => {
-    if (expiresIn) {
+    if (tokenExpiresIn) {
       const interval = setInterval(() => {
         fetch();
-      }, expiresIn);
+      }, tokenExpiresIn);
       return () => clearInterval(interval);
     }
-  }, [setAccessToken, fetch, expiresIn]);
+  }, [setAccessToken, fetch, tokenExpiresIn]);
 
   return (
     <Router>
@@ -47,8 +56,8 @@ const App: React.FC = () => {
         {accessToken && (
           <Route exact path="/player">
             <Player
-              accessToken={accessToken}
-              deleteAccessToken={() => setAccessToken('')}
+              accessToken={accessToken.value}
+              deleteAccessToken={() => setAccessToken(null)}
             />
           </Route>
         )}

@@ -1,5 +1,5 @@
 {
-  "name": "spotify-album-shuffle",
+  "name": "spotify-album-shuffle-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -24,7 +24,8 @@
     "react-scripts": "4.0.1",
     "react-spotify-web-playback": "^0.8.1",
     "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "common": "1.0.0"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [

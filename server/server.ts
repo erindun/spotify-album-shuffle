@@ -9,7 +9,7 @@ import spotifyWebApi from 'spotify-web-api-node';
 declare module 'express-session' {
   export interface SessionData {
     refresh_token: string;
-    expires_at: Date;
+    expires_at: string;
   }
 }
 
@@ -70,33 +70,36 @@ app.get('/api/auth/callback', async (req, res) => {
 
   const expires_at = new Date();
   expires_at.setTime(expires_at.getTime() + expires_in * 1000);
-  req.session.expires_at = expires_at;
+  req.session.expires_at = expires_at.toISOString();
 
   res.redirect('http://localhost:3000/player');
 });
 
 app.get('/api/auth/token', async (req, res) => {
+  let accessToken = null;
   const sess = req.session;
-  if (sess.refresh_token && sess.expires_at) {
-    if (new Date() > sess.expires_at) {
+
+  let tokenValue = spotifyApi.getAccessToken();
+  if (sess.refresh_token && sess.expires_at && tokenValue) {
+    if (new Date().getTime() > Date.parse(sess.expires_at)) {
       // if token has expired, refresh it
       const newAccessTokenResponse = await spotifyApi.refreshAccessToken();
       const { access_token, expires_in } = newAccessTokenResponse.body;
 
       const expires_at = new Date();
       expires_at.setTime(expires_at.getTime() + expires_in * 1000);
-      sess.expires_at = expires_at;
+      sess.expires_at = expires_at.toISOString();
 
       spotifyApi.setAccessToken(access_token);
+      tokenValue = access_token;
     }
-    res.json({
-      token: spotifyApi.getAccessToken(),
-      expires_at: sess.expires_at,
-    });
-  } else {
-    // do not send token
-    res.end();
+    accessToken = {
+      value: tokenValue,
+      expiresAtDateString: sess.expires_at,
+    }
   }
+
+  res.send(accessToken);
 });
 
 app.get('/api/auth/logout', (req, res) => {

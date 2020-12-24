@@ -1,14 +1,22 @@
 import axios from 'axios';
+import { AccessToken } from 'common';
 import { Album } from '../components/Player';
 
 const apiUrl = 'http://localhost:5000/api';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function fetchAccessToken(): Promise<any> {
-  const response = await axios.get(`${apiUrl}/auth/token`, {
+export async function fetchAccessToken(): Promise<AccessToken | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const response = await axios.get<any>(`${apiUrl}/auth/token`, {
     withCredentials: true,
   });
-  return response.data;
+  let accessToken: AccessToken | null = null;
+  if (response.data) {
+    accessToken = {
+      value: response.data.value,
+      expiresAt: response.data.expires_at
+    } as AccessToken;
+  }
+  return accessToken;
 }
 
 export async function fetchAuthUrl(): Promise<string> {
