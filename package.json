@@ -2,5 +2,15 @@
   "name": "spotify-album-shuffle",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["client", "common", "server"]
+  "workspaces": [
+    "client",
+    "common",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"cd server && yarn start\" \"cd client && yarn start\""
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0"
+  }
 }
