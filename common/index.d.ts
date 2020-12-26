@@ -3,4 +3,12 @@ declare module 'common' {
     value: string;
     expiresAt: string;
   }
+
+  export interface Album {
+    uri: string;
+    name: string;
+    artist: string;
+    artworkUrl: string;
+    trackIds: string[];
+  }
 }

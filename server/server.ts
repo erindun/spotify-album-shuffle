@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import connectPgSession from 'connect-pg-simple';
 import spotifyWebApi from 'spotify-web-api-node';
-import { AccessToken } from 'common';
+import { AccessToken, Album } from 'common';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -117,20 +117,28 @@ app.get('/api/albums', async (req, res) => {
     });
     const numAlbums = response.body.total;
 
-    const albums = [];
+    const items: SpotifyApi.SavedAlbumObject[] = [];
     for (let i = 0; i < numAlbums; i += 50) {
       const data = await spotifyApi.getMySavedAlbums({
         limit: 50,
         offset: i,
       });
 
-      const items = data.body.items;
-      for (const item of items) {
-        albums.push(item.album);
-      }
+      items.push(...data.body.items);
     }
 
-    res.json(albums);
+    const albums = items.map(
+      (item) =>
+        ({
+          uri: item.album.uri,
+          name: item.album.name,
+          artist: item.album.artists[0].name,
+          artworkUrl: item.album.images[0].url,
+          trackIds: item.album.tracks.items.map((item) => item.id),
+        } as Album)
+    );
+
+    res.send(albums);
   } catch (err) {
     console.log(err);
     res.send(err);
