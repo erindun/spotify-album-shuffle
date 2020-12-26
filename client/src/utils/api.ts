@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { AccessToken } from 'common';
-import { Album } from '../components/Player';
+import { AccessToken, Album } from 'common';
 
 const apiUrl = 'http://localhost:5000/api';
 

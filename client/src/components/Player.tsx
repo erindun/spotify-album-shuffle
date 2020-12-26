@@ -10,17 +10,11 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
-import SpotifyPlayer from 'react-spotify-web-playback';
+import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
 import useLocalStorage from '../utils/useLocalStorage';
 import { useHistory } from 'react-router-dom';
-
-export interface Album {
-  uri: string;
-  name: string;
-  artist: string;
-  artworkUrl: string;
-}
+import { Album } from 'common';
 
 interface PlayerProps {
   accessToken: string;
@@ -79,6 +73,11 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
     setQueueIndex(0);
     setLoading(true);
   }
+
+  function onPlayerUpdate(state: CallbackState) {
+    // TODO
+  }
+
   const history = useHistory();
   async function onLogout() {
     await logout();
@@ -169,7 +168,12 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
                 <ArrowForwardIcon ml={{ sm: 0, md: 2 }} />
               </Button>
             </Flex>
-            <Box position="fixed" bottom={0} minW={{ sm: '99vw', md: '100vw' }} ml={{ sm: '0.2em', md: '0em' }}>
+            <Box
+              position="fixed"
+              bottom={0}
+              minW={{ sm: '99vw', md: '100vw' }}
+              ml={{ sm: '0.2em', md: '0em' }}
+            >
               <SpotifyPlayer
                 token={accessToken}
                 uris={currentAlbum.uri}
@@ -182,6 +186,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
                   sliderColor: spotifyGreen,
                   sliderTrackColor: spotifyMedGray,
                 }}
+                callback={onPlayerUpdate}
               />
             </Box>
           </>
