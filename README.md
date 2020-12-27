@@ -1,46 +1,30 @@
-# Getting Started with Create React App
+# Spotify Album Shuffle
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Spotify Album Shuffle connects with your Spotify account to generate and play a queue of all the albums saved in your library in a random order. If you have hundreds of albums saved, like me, hopefully this can alleviate the burden of having too many choices when you feel like listening to a full album :)
 
-## Available Scripts
+Note: Currently, using the web player requires a Spotify Premium account. You *can* still use this application without a Premium account to generate a random list of albums, but unfortunately you will have to manually play it on another Spotify player. I will be adding an alternative so that free Spotify users can still play their shuffled albums on another device, but for now, it might be a bit rough :(
 
-In the project directory, you can run:
+## Local development/deployment
 
-### `yarn start`
+This application requires:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Node.js, with `yarn` as a package manager (`npm` will not work!)
+- PostgreSQL
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Setup
+- `git clone https://github.com/garrettdunc/spotify-album-shuffle`
+- `cd spotify-album-shuffle && yarn install`
 
-### `yarn test`
+And set up a `.env` file in the `server/` folder with the following variables:
+- `SESSION_SECRET`: key to use for signing cookies
+- `PGUSER`: name of the PostgreSQL user and database that will be using the application
+- `PGPASSWORD`: password of the PostgreSQL user that will be accessing the database
+- `SPOTIFY_CLIENT_ID`: your Spotify application's client ID
+- `SPOTIFY_CLIENT_SECRET`: your Spotify application's client secret
+- `SPOTIFY_REDIRECT_URI`: the location Spotify will redirect to after authorizing the user account. This should be `[development server URL]/api/auth/callback`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Finally, add the table to your database:
+- `psql [name of database] < node_modules/connect-pg-simple/table.sql`
 
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Start the client and server by running:
+- `yarn dev`

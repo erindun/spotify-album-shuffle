@@ -17,7 +17,8 @@ const App: React.FC = () => {
   const { state, dispatch } = useContext(AccessTokenContext);
   const tokenExpiresIn = useMemo(() => {
     if (state.accessToken && state.accessToken.expiresAt) {
-      const val = Date.parse(state.accessToken.expiresAt) - new Date().getTime();
+      const val =
+        Date.parse(state.accessToken.expiresAt) - new Date().getTime();
       if (val > 0) {
         return val;
       }
@@ -31,8 +32,8 @@ const App: React.FC = () => {
       const data = await fetchAccessToken();
       dispatch({
         type: 'REFRESH',
-        payload: data
-      })
+        payload: data,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -63,7 +64,6 @@ const App: React.FC = () => {
         <Switch>
           <Route exact path="/">
             {state.accessToken ? <Redirect to="/player" /> : <Login />}
-            <Login />
           </Route>
           {state.accessToken && (
             <Route exact path="/player">
