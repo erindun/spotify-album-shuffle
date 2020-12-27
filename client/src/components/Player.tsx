@@ -176,6 +176,7 @@ const Player: React.FC = () => {
               <SpotifyPlayer
                 token={state.accessToken.value}
                 uris={currentAlbum.uri}
+                autoPlay
                 styles={{
                   bgColor: spotifyBlack,
                   color: spotifyLightGray,
