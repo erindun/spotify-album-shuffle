@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useContext } from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -9,41 +9,42 @@ import { Box } from '@chakra-ui/react';
 import Player from './components/Player';
 import Login from './components/Login';
 import { fetchAccessToken } from './utils/api';
-import useLocalStorage from './utils/useLocalStorage';
-import { AccessToken } from 'common';
+// import useLocalStorage from './utils/useLocalStorage';
+import { AccessTokenContext } from './utils/AccessTokenContext';
+// import { AccessToken } from 'common';
 
 const App: React.FC = () => {
-  const [accessToken, setAccessToken] = useLocalStorage<AccessToken | null>(
-    'accessToken',
-    null
-  );
+  const { state, dispatch } = useContext(AccessTokenContext);
   const tokenExpiresIn = useMemo(() => {
-    if (accessToken && accessToken.expiresAt) {
-      const val = Date.parse(accessToken.expiresAt) - new Date().getTime();
+    if (state.accessToken && state.accessToken.expiresAt) {
+      const val = Date.parse(state.accessToken.expiresAt) - new Date().getTime();
       if (val > 0) {
         return val;
       }
     }
 
     return undefined;
-  }, [accessToken]);
+  }, [state.accessToken]);
 
   const fetch = useCallback(async () => {
     try {
       const data = await fetchAccessToken();
-      setAccessToken(data);
+      dispatch({
+        type: 'REFRESH',
+        payload: data
+      })
     } catch (err) {
       console.error(err);
     }
-  }, [setAccessToken]);
+  }, [dispatch]);
 
   // effect: retrieve an access token
   // from the server when the app starts
   useEffect(() => {
-    if (!(accessToken || tokenExpiresIn)) {
+    if (!(state.accessToken || tokenExpiresIn)) {
       fetch();
     }
-  }, [fetch, accessToken, tokenExpiresIn]);
+  }, [fetch, state.accessToken, tokenExpiresIn]);
 
   // effect: get a new access token
   // from the server when it expires
@@ -54,22 +55,19 @@ const App: React.FC = () => {
       }, tokenExpiresIn);
       return () => clearInterval(interval);
     }
-  }, [setAccessToken, fetch, tokenExpiresIn]);
+  }, [fetch, tokenExpiresIn]);
 
   return (
     <Router>
       <Box bg="spotifyDarkGray">
         <Switch>
           <Route exact path="/">
-            {accessToken ? <Redirect to="/player" /> : <Login />}
+            {state.accessToken ? <Redirect to="/player" /> : <Login />}
             <Login />
           </Route>
-          {accessToken && (
+          {state.accessToken && (
             <Route exact path="/player">
-              <Player
-                accessToken={accessToken.value}
-                deleteAccessToken={() => setAccessToken(null)}
-              />
+              <Player />
             </Route>
           )}
           <Redirect to="/" />

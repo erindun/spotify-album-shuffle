@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import theme from '../theme';
 import {
   Box,
@@ -15,13 +15,10 @@ import { fetchAlbumsList, logout } from '../utils/api';
 import useLocalStorage from '../utils/useLocalStorage';
 import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
+import { AccessTokenContext } from '../utils/AccessTokenContext';
 
-interface PlayerProps {
-  accessToken: string;
-  deleteAccessToken: () => void;
-}
-
-const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
+const Player: React.FC = () => {
+  const { state, dispatch } = useContext(AccessTokenContext);
   const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
     'albumsList',
     []
@@ -74,14 +71,16 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
     setLoading(true);
   }
 
-  function onPlayerUpdate(state: CallbackState) {
-    // TODO
+  async function onPlayerUpdate(state: CallbackState) {
+    if (state.error) {
+      // TODO
+    }
   }
 
   const history = useHistory();
   async function onLogout() {
     await logout();
-    deleteAccessToken();
+    dispatch({ type: 'DELETE' });
     history.push('/');
   }
 
@@ -120,7 +119,7 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
       </Flex>
 
       <Box>
-        {!(accessToken && currentAlbum) || loading ? (
+        {!(state.accessToken && currentAlbum) || loading ? (
           <Spinner mt={300} />
         ) : (
           <>
@@ -175,9 +174,8 @@ const Player: React.FC<PlayerProps> = ({ accessToken, deleteAccessToken }) => {
               ml={{ sm: '0.2em', md: '0em' }}
             >
               <SpotifyPlayer
-                token={accessToken}
+                token={state.accessToken.value}
                 uris={currentAlbum.uri}
-                autoPlay
                 styles={{
                   bgColor: spotifyBlack,
                   color: spotifyLightGray,

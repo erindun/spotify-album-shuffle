@@ -3,13 +3,16 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
+import { AccessTokenProvider } from './utils/AccessTokenContext';
 import theme from './theme';
 import 'focus-visible/dist/focus-visible';
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <AccessTokenProvider>
+        <App />
+      </AccessTokenProvider>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
