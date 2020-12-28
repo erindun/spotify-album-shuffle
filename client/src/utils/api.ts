@@ -30,6 +30,6 @@ export async function logout(): Promise<void> {
 
 export async function fetchAlbumsList(): Promise<Album[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const response = await axios.get<any[]>(`${apiUrl}/albums`);
+  const response = await axios.get<any[]>(`${apiUrl}/albums`, { withCredentials: true });
   return response.data;
 }
