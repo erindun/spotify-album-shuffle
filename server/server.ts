@@ -7,6 +7,8 @@ import connectPgSession from 'connect-pg-simple';
 import spotifyWebApi from 'spotify-web-api-node';
 import { AccessToken, Album } from 'common';
 
+const clientUrl = process.env.NODE_ENV === 'production' ? 'https://spotifyalbumshuffle.com' : 'http://localhost:3000';
+
 declare module 'express-session' {
   export interface SessionData {
     refresh_token: string;
@@ -16,7 +18,7 @@ declare module 'express-session' {
 
 dotenv.config();
 const app = express();
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({ credentials: true, origin: clientUrl }));
 
 // connect to database
 const pgSession = connectPgSession(session);
@@ -73,7 +75,7 @@ app.get('/api/auth/callback', async (req, res) => {
   expires_at.setTime(expires_at.getTime() + expires_in * 1000);
   req.session.expires_at = expires_at.toISOString();
 
-  res.redirect('http://localhost:3000/player');
+  res.redirect(`${clientUrl}/player`);
 });
 
 app.get('/api/auth/token', async (req, res) => {

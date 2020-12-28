@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AccessToken, Album } from 'common';
 
-const apiUrl = 'http://localhost:5000/api';
+const apiUrl = process.env.NODE_ENV === 'production' ? 'https://spotifyalbumshuffle.com/api' : 'http://localhost:5000/api';
 
 export async function fetchAccessToken(): Promise<AccessToken | null> {
   const response = await axios.get<AccessToken | null>(`${apiUrl}/auth/token`, {
