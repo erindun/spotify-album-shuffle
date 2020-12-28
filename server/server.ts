@@ -7,7 +7,10 @@ import connectPgSession from 'connect-pg-simple';
 import spotifyWebApi from 'spotify-web-api-node';
 import { AccessToken, Album } from 'common';
 
-const clientUrl = process.env.NODE_ENV === 'production' ? 'https://spotifyalbumshuffle.com' : 'http://localhost:3000';
+let clientUrl = 'https://spotifyalbumshuffle.com';
+if (process.env.NODE_ENV === 'development') {
+  clientUrl = 'http://localhost:3000'
+}
 
 declare module 'express-session' {
   export interface SessionData {
