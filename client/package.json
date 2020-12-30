@@ -16,21 +16,17 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "axios": "^0.21.0",
+    "common": "1.0.0",
     "focus-visible": "^5.2.0",
     "framer-motion": "^2.9.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-icons": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-spotify-web-playback": "^0.8.1",
     "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4",
-    "common": "1.0.0"
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write"
-    ]
+    "web-vitals": "^0.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -65,13 +61,6 @@
   "devDependencies": {
     "@types/react-router-dom": "^5.1.6",
     "eslint-config-prettier": "^7.0.0",
-    "husky": "^4.3.5",
-    "lint-staged": "^10.5.3",
     "prettier": "^2.2.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
