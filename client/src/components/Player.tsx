@@ -123,7 +123,7 @@ const Player: React.FC = () => {
       </Box>
       <Box>
         {!(state.accessToken && currentAlbum) || loading ? (
-          <Spinner mt="20rem" />
+          <Spinner mt={{ base: "15rem", md: "20rem" }} />
         ) : (
           <>
             <Box mt="2rem">
