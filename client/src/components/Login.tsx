@@ -42,7 +42,7 @@ const Login: React.FC = () => {
         play a queue of all the albums saved in your library in a random order.
         If you have hundreds of albums saved, like me, hopefully this can
         alleviate the burden of having too many choices when you feel like
-        listening to a full album :)
+        listening to a full album. :)
       </Text>
       {!authUrl ? null : (
         <Box>
@@ -54,15 +54,21 @@ const Login: React.FC = () => {
         </Box>
       )}
       <Text mt="4rem" fontSize="0.75rem">
-        Note: Using the web player requires a Spotify Premium
-        account. You can still use this application without a Premium
-        account to generate a random list of albums, but unfortunately you will
-        have to manually play it on another Spotify player.
+        Note: Using the web player requires a Spotify Premium account. You can
+        still use this application without a Premium account to generate a
+        random list of albums, but unfortunately you will have to manually play
+        it on another Spotify player.
       </Text>
-      <Link mt="4rem" href="https://github.com/garrettdunc/spotify-album-shuffle" isExternal>
+      <Link
+        mt={{ base: '1.5rem', sm: '4rem' }}
+        href="https://github.com/garrettdunc/spotify-album-shuffle"
+        isExternal
+      >
         <Flex>
           <FaGithub size="3rem" />
-          <Text pt="0.75rem" pl="0.75rem">GitHub</Text>
+          <Text pt="0.75rem" pl="0.75rem">
+            GitHub
+          </Text>
         </Flex>
       </Link>
     </Flex>

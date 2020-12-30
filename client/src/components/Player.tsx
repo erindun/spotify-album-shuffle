@@ -95,14 +95,8 @@ const Player: React.FC = () => {
 
   return (
     <Box minH="100vh" textAlign="center">
-      <Box>
-        <Button
-          onClick={onReloadClicked}
-          w="12.5rem"
-          mt="2.5rem"
-          mr="0.25rem"
-          disabled={loading}
-        >
+      <Box pt={{ base: "1rem", sm: "2.5rem" }}>
+        <Button onClick={onReloadClicked} w="12.5rem" mr="0.25rem" disabled={loading}>
           {loading ? (
             'loading...'
           ) : (
@@ -112,27 +106,22 @@ const Player: React.FC = () => {
             </>
           )}
         </Button>
-        <Button
-          onClick={onLogout}
-          mt="2.5rem"
-          ml="0.25rem"
-          bgColor="spotifyGreen"
-        >
+        <Button onClick={onLogout} ml="0.25rem" bgColor="spotifyGreen">
           log out
         </Button>
       </Box>
       <Box>
         {!(state.accessToken && currentAlbum) || loading ? (
-          <Spinner mt={{ base: "15rem", md: "20rem" }} />
+          <Spinner mt={{ base: '15rem', md: '20rem' }} />
         ) : (
           <>
-            <Box mt="2rem">
+            <Box mt={{ base: "0.75rem", sm: "2rem" }}>
               <Text>now playing</Text>
               <Heading>{currentAlbum.name}</Heading>
               <Text>by</Text>
               <Heading color="white">{currentAlbum.artist}</Heading>
             </Box>
-            <Flex justify="center" align="center" mt="3rem">
+            <Flex justify="center" align="center" mt={{ base: "0.75rem", sm: "3rem" }}>
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
