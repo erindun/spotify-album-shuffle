@@ -8,6 +8,8 @@ import {
   Text,
   Image,
   Spinner,
+  Grid,
+  GridItem,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
@@ -94,14 +96,13 @@ const Player: React.FC = () => {
   } = theme.colors;
 
   return (
-    <Box minH="100vh" align="center">
-      <Flex justify="center">
+    <Box minH="100vh" textAlign="center">
+      <Box>
         <Button
           onClick={onReloadClicked}
-          w={200}
-          mt={10}
-          mb={5}
-          mr={3}
+          w="12.5rem"
+          mt="2.5rem"
+          mr="0.25rem"
           disabled={loading}
         >
           {loading ? (
@@ -109,50 +110,45 @@ const Player: React.FC = () => {
           ) : (
             <>
               reload and reshuffle
-              <RepeatIcon ml={3} />
+              <RepeatIcon ml="0.5rem" />
             </>
           )}
         </Button>
-        <Button onClick={onLogout} mt={10} mb={5} ml={3} bgColor="spotifyGreen">
+        <Button
+          onClick={onLogout}
+          mt="2.5rem"
+          ml="0.25rem"
+          bgColor="spotifyGreen"
+        >
           log out
         </Button>
-      </Flex>
-
-      <Box>
+      </Box>
+      <Box mt={{ base: '4rem', sm: '0rem' }}>
         {!(state.accessToken && currentAlbum) || loading ? (
-          <Spinner mt={300} />
+          <Spinner mt="20rem" />
         ) : (
           <>
-            <Text>now playing</Text>
-            <Heading color="white" textAlign="center">
-              {currentAlbum.name}
-            </Heading>
-            <Text>by</Text>
-            <Heading color="white" textAlign="center">
-              {currentAlbum.artist}
-            </Heading>
-
-            <Flex
-              justify="center"
-              align="center"
-              pb={{ sm: 250, md: 150 }}
-              h={600}
-            >
+            <Box mt="2rem">
+              <Text>now playing</Text>
+              <Heading>{currentAlbum.name}</Heading>
+              <Text>by</Text>
+              <Heading color="white">{currentAlbum.artist}</Heading>
+            </Box>
+            <Flex justify="center" align="center" mt="3rem">
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
-                ml={30}
+                mr="1rem"
               >
-                <ArrowBackIcon mr={{ sm: 0, md: 2 }} />
-                <Text display={{ sm: 'none', md: 'block' }}>
+                <ArrowBackIcon mr={{ base: '0rem', md: '0.5rem' }} />
+                <Text display={{ base: 'none', md: 'block' }}>
                   previous album
                 </Text>
               </Button>
               <Image
-                w={{ sm: 350, md: 500 }}
-                src={currentAlbum?.artworkUrl}
+                h={{ base: '14rem', sm: '18rem', md: '22rem' }}
+                src={currentAlbum.artworkUrl}
                 alt=""
-                px={{ sm: 25, md: 50 }}
               />
               <Button
                 onClick={() => setQueueIndex(queueIndex + 1)}
@@ -161,18 +157,13 @@ const Player: React.FC = () => {
                     ? queueIndex === albumsList.length - 1
                     : true
                 }
-                mr={30}
+                ml="1rem"
               >
-                <Text display={{ sm: 'none', md: 'block' }}>next album</Text>
-                <ArrowForwardIcon ml={{ sm: 0, md: 2 }} />
+                <Text display={{ base: 'none', md: 'block' }}>next album</Text>
+                <ArrowForwardIcon ml={{ base: '0rem', md: '0.5rem' }} />
               </Button>
             </Flex>
-            <Box
-              position="fixed"
-              bottom={0}
-              minW={{ sm: '99vw', md: '100vw' }}
-              ml={{ sm: '0.2em', md: '0em' }}
-            >
+            <Box position="fixed" bottom={0} width="100%">
               <SpotifyPlayer
                 token={state.accessToken.value}
                 uris={currentAlbum.uri}
