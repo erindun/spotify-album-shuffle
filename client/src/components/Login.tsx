@@ -29,19 +29,30 @@ const Login: React.FC = () => {
   return (
     <Flex
       minH="100vh"
-      textAlign="center"
+      align="center"
       direction="column"
       justify="flex-start"
+      width={["90%", "70%", "60%", "45%", "30%"]}
+      margin="auto"
     >
-      <Heading mt={100}>Spotify Album Shuffle</Heading>
-      <Text mx={200} mt={50} fontSize="1.5rem">
+      <Heading mt="1.5rem">Spotify Album Shuffle</Heading>
+      <Text mt="1.5rem">
         Spotify Album Shuffle connects with your Spotify account to generate and
         play a queue of all the albums saved in your library in a random order.
         If you have hundreds of albums saved, like me, hopefully this can
         alleviate the burden of having too many choices when you feel like
         listening to a full album :)
       </Text>
-      <Text mx={200} mt={50}>
+      {!authUrl ? null : (
+        <Box>
+          <a href={authUrl}>
+            <Button size="lg" mt="3rem" bg="spotifyGreen" to={authUrl}>
+              log in with Spotify
+            </Button>
+          </a>
+        </Box>
+      )}
+      <Text mt="4rem" fontSize="0.75rem">
         Note: Currently, using the web player requires a Spotify Premium
         account. You <em>can</em> still use this application without a Premium
         account to generate a random list of albums, but unfortunately you will
@@ -49,21 +60,6 @@ const Login: React.FC = () => {
         alternative so that free Spotify users can still play their shuffled
         albums on another device, but for now, it might be a bit rough...
       </Text>
-      {!authUrl ? null : (
-        <a href={authUrl}>
-          <Button
-            size="lg"
-            px="3em"
-            mt={100}
-            py="1.5em"
-            rounded="48px"
-            bg="spotifyGreen"
-            to={authUrl}
-          >
-            log in with Spotify
-          </Button>
-        </a>
-      )}
     </Flex>
   );
 };
