@@ -121,7 +121,7 @@ const Player: React.FC = () => {
           log out
         </Button>
       </Box>
-      <Box mt={{ base: '4rem', sm: '0rem' }}>
+      <Box>
         {!(state.accessToken && currentAlbum) || loading ? (
           <Spinner mt="20rem" />
         ) : (
