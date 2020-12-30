@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Button, Text, Heading } from '@chakra-ui/react';
+import { Flex, Box, Button, Text, Heading, Link } from '@chakra-ui/react';
 import { fetchAuthUrl } from '../utils/api';
+import { FaGithub } from 'react-icons/fa';
 
 const Login: React.FC = () => {
   const [authUrl, setAuthUrl] = useState('');
@@ -32,7 +33,7 @@ const Login: React.FC = () => {
       align="center"
       direction="column"
       justify="flex-start"
-      width={["90%", "70%", "60%", "45%", "30%"]}
+      width={['90%', '70%', '60%', '45%', '30%']}
       margin="auto"
     >
       <Heading mt="1.5rem">Spotify Album Shuffle</Heading>
@@ -53,13 +54,17 @@ const Login: React.FC = () => {
         </Box>
       )}
       <Text mt="4rem" fontSize="0.75rem">
-        Note: Currently, using the web player requires a Spotify Premium
-        account. You <em>can</em> still use this application without a Premium
+        Note: Using the web player requires a Spotify Premium
+        account. You can still use this application without a Premium
         account to generate a random list of albums, but unfortunately you will
-        have to manually play it on another Spotify player. I will be adding an
-        alternative so that free Spotify users can still play their shuffled
-        albums on another device, but for now, it might be a bit rough...
+        have to manually play it on another Spotify player.
       </Text>
+      <Link mt="4rem" href="https://github.com/garrettdunc/spotify-album-shuffle" isExternal>
+        <Flex>
+          <FaGithub size="3rem" />
+          <Text pt="0.75rem" pl="0.75rem">GitHub</Text>
+        </Flex>
+      </Link>
     </Flex>
   );
 };

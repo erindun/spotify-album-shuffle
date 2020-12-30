@@ -49,6 +49,6 @@
     }
   },
   "scripts": {
-    "start": "nodemon server.ts"
+    "start": "NODE_ENV=development nodemon server.ts"
   }
 }
