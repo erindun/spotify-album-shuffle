@@ -8,8 +8,6 @@ import {
   Text,
   Image,
   Spinner,
-  Grid,
-  GridItem,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
