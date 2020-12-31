@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import theme from '../theme';
 import {
   Box,
@@ -8,6 +8,14 @@ import {
   Text,
   Image,
   Spinner,
+  useMediaQuery,
+  AlertDialog,
+  AlertDialogContent,
+  useDisclosure,
+  AlertDialogOverlay,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogBody,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
@@ -26,6 +34,10 @@ const Player: React.FC = () => {
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const [loading, setLoading] = useState(false);
   const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const closeAlertRef = useRef(null);
+  const [seenAlert, setSeenAlert] = useLocalStorage('seenAlert', false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const currentAlbum = useMemo(() => {
     if (queueIndex < 0) {
@@ -65,6 +77,13 @@ const Player: React.FC = () => {
     }
   }, [setAlbumsList, fetchAlbums]);
 
+  // effect: show alert modal if mobile is being used
+  useEffect(() => {
+    if (!isDesktop && !seenAlert) {
+      onOpen();
+    }
+  }, [isDesktop, seenAlert, onOpen]);
+
   function onReloadClicked() {
     setFetchAlbums(true);
     setQueueIndex(0);
@@ -75,6 +94,11 @@ const Player: React.FC = () => {
     if (state.error) {
       // TODO
     }
+  }
+
+  function onCloseAlert() {
+    setSeenAlert(true);
+    onClose();
   }
 
   const history = useHistory();
@@ -192,6 +216,27 @@ const Player: React.FC = () => {
           </>
         )}
       </Box>
+      <AlertDialog
+        isOpen={isOpen}
+        onClose={onCloseAlert}
+        leastDestructiveRef={closeAlertRef}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent bgColor="spotifyDarkGray">
+            <AlertDialogHeader>using mobile?</AlertDialogHeader>
+            <AlertDialogBody>
+              When using mobile, open the Spotify app on your device to allow
+              controlling the player.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={closeAlertRef} onClick={onCloseAlert}>
+                OK
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };
