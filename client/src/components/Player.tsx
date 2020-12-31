@@ -95,8 +95,13 @@ const Player: React.FC = () => {
 
   return (
     <Box minH="100vh" textAlign="center">
-      <Box pt={{ base: "1rem", sm: "2.5rem" }}>
-        <Button onClick={onReloadClicked} w="12.5rem" mr="0.25rem" disabled={loading}>
+      <Box pt={{ base: '1rem', sm: '2.5rem' }}>
+        <Button
+          onClick={onReloadClicked}
+          w="12.5rem"
+          mr="0.25rem"
+          disabled={loading}
+        >
           {loading ? (
             'loading...'
           ) : (
@@ -115,13 +120,31 @@ const Player: React.FC = () => {
           <Spinner mt={{ base: '15rem', md: '20rem' }} />
         ) : (
           <>
-            <Box mt={{ base: "0.75rem", sm: "2rem" }}>
-              <Text>now playing</Text>
-              <Heading>{currentAlbum.name}</Heading>
+            <Box mt={{ base: '0.75rem', sm: '2rem' }} h="11em">
+              <Text display={{ base: 'none', sm: 'block' }}>now playing</Text>
+              <Heading
+                textOverflow="ellipsis"
+                overflow="hidden"
+                wordBreak="break-word"
+                maxH="4em"
+              >
+                {currentAlbum.name}
+              </Heading>
               <Text>by</Text>
-              <Heading color="white">{currentAlbum.artist}</Heading>
+              <Heading
+                textOverflow="ellipsis"
+                overflow="hidden"
+                wordBreak="break-word"
+                maxH="1.5em"
+              >
+                {currentAlbum.artist}
+              </Heading>
             </Box>
-            <Flex justify="center" align="center" mt={{ base: "0.75rem", sm: "3rem" }}>
+            <Flex
+              justify="center"
+              align="center"
+              mt={{ base: '0.75rem', sm: '3rem' }}
+            >
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
