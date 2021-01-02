@@ -240,7 +240,7 @@ const Player: React.FC = () => {
             <AlertDialogHeader>using mobile?</AlertDialogHeader>
             <AlertDialogBody>
               To listen on mobile, open the Spotify app on your device and
-              select it from the menu.
+              select it from the web player's Connect menu.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={closeAlertRef} onClick={onCloseAlert}>
