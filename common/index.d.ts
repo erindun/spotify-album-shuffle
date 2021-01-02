@@ -5,10 +5,9 @@ declare module 'common' {
   }
 
   export interface Album {
-    uri: string;
+    uris: string[];
     name: string;
     artist: string;
     artworkUrl: string;
-    trackIds: string[];
   }
 }

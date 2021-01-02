@@ -57,6 +57,14 @@ const Player: React.FC = () => {
     }
   }
 
+  const queue = useMemo(() => {
+    const tracks: string[] = [];
+    for (let i = queueIndex; i < albumsList.length && i < queueIndex + 3; i++) {
+      tracks.push(...albumsList[i].uris);
+    }
+    return tracks;
+  }, [albumsList, queueIndex]);
+
   // effect: fetch list of albums in user's library
   useEffect(() => {
     async function fetch() {
@@ -91,8 +99,13 @@ const Player: React.FC = () => {
   }
 
   async function onPlayerUpdate(state: CallbackState) {
-    if (state.error) {
-      // TODO
+    if (
+      currentAlbum &&
+      !currentAlbum.uris.includes(state.track.uri) &&
+      state.previousTracks.length &&
+      currentAlbum.uris.includes(state.previousTracks[0].uri)
+    ) {
+      setQueueIndex(queueIndex + 1);
     }
   }
 
@@ -140,7 +153,7 @@ const Player: React.FC = () => {
         </Button>
       </Box>
       <Box>
-        {!(state.accessToken && currentAlbum) || loading ? (
+        {!(state.accessToken && currentAlbum && queue) || loading ? (
           <Spinner mt={{ base: '15rem', md: '20rem' }} />
         ) : (
           <>
@@ -200,7 +213,7 @@ const Player: React.FC = () => {
             <Box position="fixed" bottom={0} width="100%">
               <SpotifyPlayer
                 token={state.accessToken.value}
-                uris={currentAlbum.uri}
+                uris={queue}
                 autoPlay
                 styles={{
                   bgColor: spotifyBlack,

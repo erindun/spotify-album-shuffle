@@ -132,13 +132,12 @@ app.get('/api/albums', async (req, res) => {
       }
 
       const albums = items.map(
-        (item) =>
+        ({ album }) =>
           ({
-            uri: item.album.uri,
-            name: item.album.name,
-            artist: item.album.artists[0].name,
-            artworkUrl: item.album.images[0].url,
-            trackIds: item.album.tracks.items.map((item) => item.id),
+            uris: album.tracks.items.map(({ uri }) => uri),
+            name: album.name,
+            artist: album.artists[0].name,
+            artworkUrl: album.images[0].url,
           } as Album)
       );
 
