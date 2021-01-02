@@ -87,7 +87,7 @@ const Player: React.FC = () => {
 
   // effect: show alert modal if mobile is being used
   useEffect(() => {
-    if (!isDesktop && !seenAlert) {
+    if (!isDesktop[0] && !seenAlert) {
       onOpen();
     }
   }, [isDesktop, seenAlert, onOpen]);
