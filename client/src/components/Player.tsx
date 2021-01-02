@@ -157,13 +157,13 @@ const Player: React.FC = () => {
           <Spinner mt={{ base: '15rem', md: '20rem' }} />
         ) : (
           <>
-            <Box mt={{ base: '0.75rem', sm: '2rem' }} h="11em">
+            <Box mt={{ base: '-1.75rem', sm: '2rem' }} h="11em">
               <Text display={{ base: 'none', sm: 'block' }}>now playing</Text>
               <Heading
                 textOverflow="ellipsis"
                 overflow="hidden"
                 wordBreak="break-word"
-                maxH="4em"
+                maxH="2.7em"
               >
                 {currentAlbum.name}
               </Heading>
@@ -180,14 +180,14 @@ const Player: React.FC = () => {
             <Flex
               justify="center"
               align="center"
-              mt={{ base: '0.75rem', sm: '3rem' }}
+              mt={{ base: '-1.75rem', sm: '3rem' }}
             >
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
                 mr="1rem"
               >
-                <ArrowBackIcon mr={{ base: '0rem', md: '0.5rem' }} />
+                <ArrowBackIcon mr={{ md: '0.5rem' }} />
                 <Text display={{ base: 'none', md: 'block' }}>
                   previous album
                 </Text>
@@ -207,7 +207,7 @@ const Player: React.FC = () => {
                 ml="1rem"
               >
                 <Text display={{ base: 'none', md: 'block' }}>next album</Text>
-                <ArrowForwardIcon ml={{ base: '0rem', md: '0.5rem' }} />
+                <ArrowForwardIcon ml={{ md: '0.5rem' }} />
               </Button>
             </Flex>
             <Box position="fixed" bottom={0} width="100%">
@@ -239,8 +239,8 @@ const Player: React.FC = () => {
           <AlertDialogContent bgColor="spotifyDarkGray">
             <AlertDialogHeader>using mobile?</AlertDialogHeader>
             <AlertDialogBody>
-              When using mobile, open the Spotify app on your device to allow
-              controlling the player.
+              To listen on mobile, open the Spotify app on your device and
+              select it from the menu.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={closeAlertRef} onClick={onCloseAlert}>
