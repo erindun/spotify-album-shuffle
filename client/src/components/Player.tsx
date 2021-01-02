@@ -59,7 +59,7 @@ const Player: React.FC = () => {
 
   const queue = useMemo(() => {
     const tracks: string[] = [];
-    for (let i = queueIndex; i < albumsList.length && i < queueIndex + 3; i++) {
+    for (let i = queueIndex; i < albumsList.length && i < queueIndex + 1; i++) {
       tracks.push(...albumsList[i].uris);
     }
     return tracks;
