@@ -157,7 +157,7 @@ const Player: React.FC = () => {
           <Spinner mt={{ base: '15rem', md: '20rem' }} />
         ) : (
           <>
-            <Box mt={{ base: '-1.75rem', sm: '2rem' }} h="11em">
+            <Box mt={{ base: '0.25rem', sm: '2rem' }} h="11em">
               <Text display={{ base: 'none', sm: 'block' }}>now playing</Text>
               <Heading
                 textOverflow="ellipsis"
@@ -180,7 +180,7 @@ const Player: React.FC = () => {
             <Flex
               justify="center"
               align="center"
-              mt={{ base: '-1.75rem', sm: '3rem' }}
+              mt={{ base: '-1.25rem', sm: '3rem' }}
             >
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
