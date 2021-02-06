@@ -1,4 +1,5 @@
 # Spotify Album Shuffle
+https://spotifyalbumshuffle.com
 
 Spotify Album Shuffle connects with your Spotify account to generate and play a queue of all the albums saved in your library in a random order. If you have hundreds of albums saved, like me, hopefully this can alleviate the burden of having too many choices when you feel like listening to a full album :)
 
