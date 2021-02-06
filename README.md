@@ -2,7 +2,7 @@
 
 Spotify Album Shuffle connects with your Spotify account to generate and play a queue of all the albums saved in your library in a random order. If you have hundreds of albums saved, like me, hopefully this can alleviate the burden of having too many choices when you feel like listening to a full album :)
 
-Note: Currently, using the web player requires a Spotify Premium account. You *can* still use this application without a Premium account to generate a random list of albums, but unfortunately you will have to manually play it on another Spotify player. I will be adding an alternative so that free Spotify users can still play their shuffled albums on another device, but for now, it might be a bit rough :(
+Note: Currently, using the web player requires a Spotify Premium account. You *can* still use this application without a Premium account to generate a random list of albums, but unfortunately you will have to manually play it on another Spotify player.
 
 ## Local development
 
@@ -20,7 +20,8 @@ cd spotify-album-shuffle && yarn install
 
 Next, set up a `.env` file in the `server/` folder with the following variables:
 - `SESSION_SECRET`: key to use for signing cookies
-- `PGUSER`: name of the PostgreSQL user and database that will be using the application
+- `PGUSER`: name of the PostgreSQL user that will be using the application
+- `PGDATABASE`: name of the PostgreSQL database that will be using the application
 - `PGPASSWORD`: password of the PostgreSQL user that will be accessing the database
 - `SPOTIFY_CLIENT_ID`: your Spotify application's client ID
 - `SPOTIFY_CLIENT_SECRET`: your Spotify application's client secret
