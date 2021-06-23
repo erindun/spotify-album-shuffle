@@ -6,13 +6,20 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { AccessTokenProvider } from './utils/AccessTokenContext';
 import theme from './theme';
 import 'focus-visible/dist/focus-visible';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+
+const queryClient = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <AccessTokenProvider>
-        <App />
-      </AccessTokenProvider>
+      <QueryClientProvider client={queryClient}>
+        <AccessTokenProvider>
+          <ReactQueryDevtools />
+          <App />
+        </AccessTokenProvider>
+      </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')

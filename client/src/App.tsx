@@ -9,9 +9,7 @@ import { Box } from '@chakra-ui/react';
 import Player from './components/Player';
 import Login from './components/Login';
 import { fetchAccessToken } from './utils/api';
-// import useLocalStorage from './utils/useLocalStorage';
 import { AccessTokenContext } from './utils/AccessTokenContext';
-// import { AccessToken } from 'common';
 
 const App: React.FC = () => {
   const { state, dispatch } = useContext(AccessTokenContext);

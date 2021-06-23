@@ -1,31 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Flex, Box, Button, Text, Heading, Link } from '@chakra-ui/react';
 import { fetchAuthUrl } from '../utils/api';
 import { FaGithub } from 'react-icons/fa';
+import { useQuery } from 'react-query';
 
 const Login: React.FC = () => {
-  const [authUrl, setAuthUrl] = useState('');
-
-  // effect: fetch authorization URL
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetch() {
-      try {
-        const url = await fetchAuthUrl();
-        if (mounted) {
-          setAuthUrl(url);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    fetch();
-    return function cleanup() {
-      mounted = false;
-    };
-  }, []);
+  const { data: authUrl } = useQuery('authUrl', () => fetchAuthUrl());
 
   return (
     <Flex
