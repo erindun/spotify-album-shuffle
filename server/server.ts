@@ -4,8 +4,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import connectPgSession from 'connect-pg-simple';
-import spotifyWebApi from 'spotify-web-api-node';
-import { AccessToken, Album } from 'common';
+import { AccessToken } from 'common';
+import { mapAlbumMetadata, SpotifyAlbumShuffleApi } from './utils';
 
 let clientUrl = 'https://spotifyalbumshuffle.com';
 if (process.env.NODE_ENV === 'development') {
@@ -47,11 +47,15 @@ app.use(
 );
 
 // configure Spotify API
-const spotifyApi = new spotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.SPOTIFY_REDIRECT_URI,
-});
+const shuffleApi = new SpotifyAlbumShuffleApi(
+  // TODO handle invalid Spotify API credentials
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  process.env.SPOTIFY_CLIENT_ID!,
+  process.env.SPOTIFY_CLIENT_SECRET!,
+  process.env.SPOTIFY_REDIRECT_URI!
+  /* eslint-enable @typescript-eslint/no-non-null-assertion */
+);
+
 const scopes = [
   'streaming',
   'user-read-email',
@@ -63,13 +67,15 @@ const scopes = [
 ];
 
 app.get('/api/auth', (req, res) => {
-  const html = spotifyApi.createAuthorizeURL(scopes, 'state');
+  const html = shuffleApi.spotifyApi.createAuthorizeURL(scopes, 'state');
   res.send(html);
 });
 
 app.get('/api/auth/callback', async (req, res) => {
   const { code } = req.query;
-  const data = await spotifyApi.authorizationCodeGrant(code as string);
+  const data = await shuffleApi.spotifyApi.authorizationCodeGrant(
+    code as string
+  );
   const { access_token, refresh_token, expires_in } = data.body;
 
   req.session.refresh_token = refresh_token;
@@ -88,8 +94,9 @@ app.get('/api/auth/token', async (req, res) => {
   if (sess.refresh_token && sess.expires_at) {
     if (new Date() > new Date(sess.expires_at)) {
       // if token has expired, refresh it
-      spotifyApi.setRefreshToken(sess.refresh_token);
-      const newAccessTokenResponse = await spotifyApi.refreshAccessToken();
+      shuffleApi.spotifyApi.setRefreshToken(sess.refresh_token);
+      const newAccessTokenResponse =
+        await shuffleApi.spotifyApi.refreshAccessToken();
       const { access_token, expires_in } = newAccessTokenResponse.body;
       sess.access_token = access_token;
 
@@ -113,34 +120,11 @@ app.get('/api/auth/logout', (req, res) => {
 
 app.get('/api/albums', async (req, res) => {
   if (req.session.access_token) {
-    spotifyApi.setAccessToken(req.session.access_token);
     try {
-      const response = await spotifyApi.getMySavedAlbums({
-        limit: 50,
-        offset: 0,
-      });
-      const numAlbums = response.body.total;
-
-      const items: SpotifyApi.SavedAlbumObject[] = [];
-      for (let i = 0; i < numAlbums; i += 50) {
-        const data = await spotifyApi.getMySavedAlbums({
-          limit: 50,
-          offset: i,
-        });
-
-        items.push(...data.body.items);
-      }
-
-      const albums = items.map(
-        ({ album }) =>
-          ({
-            uris: album.tracks.items.map(({ uri }) => uri),
-            name: album.name,
-            artist: album.artists[0].name,
-            artworkUrl: album.images[0].url,
-          } as Album)
+      const albumObjects = await shuffleApi.fetchAllSavedAlbums(
+        req.session.access_token
       );
-
+      const albums = mapAlbumMetadata(albumObjects);
       res.send(albums);
     } catch (err) {
       console.log(err);
