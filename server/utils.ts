@@ -32,10 +32,10 @@ export class SpotifyAlbumShuffleApi {
 
         albums.push(...data.body.items);
       }
+      return albums;
     } catch (err) {
-      Promise.reject(new Error('Failed to get saved albums'));
+      return Promise.reject(new Error('Failed to get saved albums'));
     }
-    return albums;
   }
 }
 
