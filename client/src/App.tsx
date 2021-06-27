@@ -58,7 +58,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Box bg="spotifyDarkGray">
+      <Box bg="spotifyDarkGray" h="100vh">
         <Switch>
           <Route exact path="/">
             {state.accessToken ? <Redirect to="/player" /> : <Login />}

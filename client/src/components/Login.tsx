@@ -9,7 +9,6 @@ const Login: React.FC = () => {
 
   return (
     <Flex
-      minH="100vh"
       align="center"
       direction="column"
       justify="flex-start"

@@ -120,8 +120,8 @@ const Player: React.FC = () => {
     theme.colors;
 
   return (
-    <Box minH="100vh" textAlign="center">
-      <Box pt={{ base: '1rem', sm: '2.5rem' }}>
+    <Flex textAlign="center" justifyContent="space-between" direction="column">
+      <Box pt={{ base: '1rem' }}>
         <Button
           onClick={onReloadClicked}
           w="12.5rem"
@@ -141,36 +141,32 @@ const Player: React.FC = () => {
           log out
         </Button>
       </Box>
-      <Box>
-        {!(state.accessToken && currentAlbum && queue) || loading ? (
-          <Spinner mt={{ base: '15rem', md: '20rem' }} />
-        ) : (
-          <>
-            <Box mt={{ base: '0.25rem', sm: '2rem' }} h="11em">
-              <Text display={{ base: 'none', sm: 'block' }}>now playing</Text>
+      {!(state.accessToken && currentAlbum && queue) || loading ? (
+        <Spinner mt={{ base: '15rem', md: '20rem' }} />
+      ) : (
+        <>
+          <Box>
+            <Box mt={{ base: '0.5rem', sm: '1rem' }}>
+              <Text display={{ base: 'none', md: 'block' }}>now playing</Text>
               <Heading
+                fontSize="1.5rem"
                 textOverflow="ellipsis"
                 overflow="hidden"
                 wordBreak="break-word"
-                maxH="2.7em"
               >
                 {currentAlbum.name}
               </Heading>
               <Text>by</Text>
               <Heading
+                fontSize="1.5rem"
                 textOverflow="ellipsis"
                 overflow="hidden"
                 wordBreak="break-word"
-                maxH="1.5em"
               >
                 {currentAlbum.artist}
               </Heading>
             </Box>
-            <Flex
-              justify="center"
-              align="center"
-              mt={{ base: '-1.25rem', sm: '3rem' }}
-            >
+            <Flex justify="center" align="center" mt="1rem">
               <Button
                 onClick={() => setQueueIndex(queueIndex - 1)}
                 disabled={queueIndex === 0}
@@ -182,7 +178,7 @@ const Player: React.FC = () => {
                 </Text>
               </Button>
               <Image
-                h={{ base: '14rem', sm: '18rem', md: '22rem' }}
+                h={{ base: '12rem' }}
                 src={currentAlbum.artworkUrl}
                 alt=""
               />
@@ -199,25 +195,25 @@ const Player: React.FC = () => {
                 <ArrowForwardIcon ml={{ md: '0.5rem' }} />
               </Button>
             </Flex>
-            <Box position="fixed" bottom={0} width="100%">
-              <SpotifyPlayer
-                token={state.accessToken.value}
-                uris={queue}
-                autoPlay
-                styles={{
-                  bgColor: spotifyBlack,
-                  color: spotifyLightGray,
-                  trackNameColor: spotifyLightGray,
-                  sliderHandleColor: spotifyLightGray,
-                  sliderColor: spotifyGreen,
-                  sliderTrackColor: spotifyMedGray,
-                }}
-                callback={onPlayerUpdate}
-              />
-            </Box>
-          </>
-        )}
-      </Box>
+          </Box>
+          <Box position="fixed" bottom={0} width="100%">
+            <SpotifyPlayer
+              token={state.accessToken.value}
+              uris={queue}
+              autoPlay
+              styles={{
+                bgColor: spotifyBlack,
+                color: spotifyLightGray,
+                trackNameColor: spotifyLightGray,
+                sliderHandleColor: spotifyLightGray,
+                sliderColor: spotifyGreen,
+                sliderTrackColor: spotifyMedGray,
+              }}
+              callback={onPlayerUpdate}
+            />
+          </Box>
+        </>
+      )}
       <AlertDialog
         isOpen={isOpen}
         onClose={onCloseAlert}
@@ -239,7 +235,7 @@ const Player: React.FC = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-    </Box>
+    </Flex>
   );
 };
 
