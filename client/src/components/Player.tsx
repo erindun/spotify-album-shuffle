@@ -35,14 +35,15 @@ const Player: React.FC = () => {
   const [seenAlert, setSeenAlert] = useLocalStorage('seenAlert', false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { data: albumsList, isFetching } = useQuery<Album[], Error>(
-    'albums',
-    async () => {
-      const albums = await fetchAlbumsList();
-      shuffle(albums);
-      return albums;
-    }
-  );
+  const {
+    data: albumsList,
+    isFetching,
+    refetch,
+  } = useQuery<Album[], Error>('albums', async () => {
+    const albums = await fetchAlbumsList();
+    shuffle(albums);
+    return albums;
+  });
 
   const currentAlbum = useMemo(
     () =>
@@ -72,12 +73,6 @@ const Player: React.FC = () => {
       onOpen();
     }
   }, [isDesktop, seenAlert, onOpen]);
-
-  function onReloadClicked() {
-    //   setFetchAlbums(true);
-    //   setQueueIndex(0);
-    //   setLoading(true);
-  }
 
   async function onPlayerUpdate(state: CallbackState) {
     if (
@@ -111,7 +106,7 @@ const Player: React.FC = () => {
     <Flex textAlign="center" justifyContent="space-between" direction="column">
       <Box pt={{ base: '1rem' }}>
         <Button
-          onClick={onReloadClicked}
+          onClick={() => refetch()}
           w="12.5rem"
           mr="0.25rem"
           disabled={isFetching}
