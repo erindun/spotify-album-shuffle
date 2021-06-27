@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
+import React, { useEffect, useMemo, useContext, useRef } from 'react';
 import theme from '../theme';
 import {
   Box,
@@ -25,58 +25,46 @@ import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
 import { AccessTokenContext } from '../utils/AccessTokenContext';
 import { shuffle } from '../utils/helpers';
+import { useQuery } from 'react-query';
 
 const Player: React.FC = () => {
   const { state, dispatch } = useContext(AccessTokenContext);
-  const [albumsList, setAlbumsList] = useLocalStorage<Album[]>(
-    'albumsList',
-    []
-  );
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
-  const [loading, setLoading] = useState(false);
-  const [fetchAlbums, setFetchAlbums] = useState(!albumsList.length);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const closeAlertRef = useRef(null);
   const [seenAlert, setSeenAlert] = useLocalStorage('seenAlert', false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const currentAlbum = useMemo(() => {
-    if (queueIndex < 0) {
-      return null;
-    } else if (queueIndex >= albumsList.length) {
-      return null;
-    } else {
-      return albumsList[queueIndex];
+  const { data: albumsList, isFetching } = useQuery<Album[], Error>(
+    'albums',
+    async () => {
+      const albums = await fetchAlbumsList();
+      shuffle(albums);
+      return albums;
     }
-  }, [queueIndex, albumsList]);
+  );
+
+  const currentAlbum = useMemo(
+    () =>
+      albumsList && queueIndex < albumsList.length
+        ? albumsList[queueIndex]
+        : undefined,
+    [queueIndex, albumsList]
+  );
 
   const queue = useMemo(() => {
-    const tracks: string[] = [];
-    for (let i = queueIndex; i < albumsList.length && i < queueIndex + 2; i++) {
-      tracks.push(...albumsList[i].uris);
-    }
-    return tracks;
-  }, [albumsList, queueIndex]);
-
-  // effect: fetch list of albums in user's library
-  useEffect(() => {
-    async function fetch() {
-      setFetchAlbums(false);
-      setLoading(true);
-      try {
-        const albums = await fetchAlbumsList();
-        shuffle(albums);
-        setAlbumsList(albums);
-      } catch (err) {
-        console.error(err);
+    if (albumsList) {
+      const tracks: string[] = [];
+      for (
+        let i = queueIndex;
+        i < albumsList.length && i < queueIndex + 2;
+        i++
+      ) {
+        tracks.push(...albumsList[i].uris);
       }
-      setLoading(false);
+      return tracks;
     }
-
-    if (fetchAlbums) {
-      fetch();
-    }
-  }, [setAlbumsList, fetchAlbums]);
+  }, [albumsList, queueIndex]);
 
   // effect: show alert modal if mobile is being used
   useEffect(() => {
@@ -86,9 +74,9 @@ const Player: React.FC = () => {
   }, [isDesktop, seenAlert, onOpen]);
 
   function onReloadClicked() {
-    setFetchAlbums(true);
-    setQueueIndex(0);
-    setLoading(true);
+    //   setFetchAlbums(true);
+    //   setQueueIndex(0);
+    //   setLoading(true);
   }
 
   async function onPlayerUpdate(state: CallbackState) {
@@ -126,9 +114,9 @@ const Player: React.FC = () => {
           onClick={onReloadClicked}
           w="12.5rem"
           mr="0.25rem"
-          disabled={loading}
+          disabled={isFetching}
         >
-          {loading ? (
+          {isFetching ? (
             'loading...'
           ) : (
             <>
@@ -141,8 +129,10 @@ const Player: React.FC = () => {
           log out
         </Button>
       </Box>
-      {!(state.accessToken && currentAlbum && queue) || loading ? (
-        <Spinner mt={{ base: '15rem', md: '20rem' }} />
+      {!(state.accessToken && currentAlbum && queue) || isFetching ? (
+        <Box mt={{ base: '15rem', md: '20rem' }} mx="auto" w="100%">
+          <Spinner />
+        </Box>
       ) : (
         <>
           <Box>
@@ -185,7 +175,7 @@ const Player: React.FC = () => {
               <Button
                 onClick={() => setQueueIndex(queueIndex + 1)}
                 disabled={
-                  albumsList.length
+                  albumsList && albumsList.length
                     ? queueIndex === albumsList.length - 1
                     : true
                 }
