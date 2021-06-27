@@ -1,20 +1,20 @@
 import axios from 'axios';
 import { AccessToken, Album } from 'common';
 
-const apiUrl = process.env.NODE_ENV === 'production' ? 'https://spotifyalbumshuffle.com/api' : 'http://localhost:5000/api';
+const apiUrl =
+  process.env.NODE_ENV === 'production'
+    ? 'https://spotifyalbumshuffle.com/api'
+    : 'http://localhost:5000/api';
 
-export async function fetchAccessToken(): Promise<AccessToken | null> {
-  const response = await axios.get<AccessToken | null>(`${apiUrl}/auth/token`, {
+export async function fetchAccessToken(): Promise<AccessToken> {
+  const response = await axios.get<AccessToken>(`${apiUrl}/auth/token`, {
     withCredentials: true,
   });
-  let accessToken: AccessToken | null = null;
-  if (response.data) {
-    accessToken = {
-      value: response.data.value,
-      expiresAt: response.data.expiresAt,
-    } as AccessToken;
+  if (!response.data) {
+    return Promise.reject(new Error('Error fetching access token'));
+  } else {
+    return response.data;
   }
-  return accessToken;
 }
 
 export async function fetchAuthUrl(): Promise<string> {
@@ -29,7 +29,8 @@ export async function logout(): Promise<void> {
 }
 
 export async function fetchAlbumsList(): Promise<Album[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const response = await axios.get<any[]>(`${apiUrl}/albums`, { withCredentials: true });
+  const response = await axios.get<Album[]>(`${apiUrl}/albums`, {
+    withCredentials: true,
+  });
   return response.data;
 }

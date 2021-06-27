@@ -24,6 +24,7 @@ import useLocalStorage from '../utils/useLocalStorage';
 import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
 import { AccessTokenContext } from '../utils/AccessTokenContext';
+import { shuffle } from '../utils/helpers';
 
 const Player: React.FC = () => {
   const { state, dispatch } = useContext(AccessTokenContext);
@@ -48,14 +49,6 @@ const Player: React.FC = () => {
       return albumsList[queueIndex];
     }
   }, [queueIndex, albumsList]);
-
-  /** Shuffles an array in-place. */
-  function shuffle<T>(array: T[]): void {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-  }
 
   const queue = useMemo(() => {
     const tracks: string[] = [];
@@ -123,12 +116,8 @@ const Player: React.FC = () => {
 
   // Chakra-UI theme values can't be passed to
   // `SpotifyPlayer`, so extract the colors directly
-  const {
-    spotifyBlack,
-    spotifyMedGray,
-    spotifyLightGray,
-    spotifyGreen,
-  } = theme.colors;
+  const { spotifyBlack, spotifyMedGray, spotifyLightGray, spotifyGreen } =
+    theme.colors;
 
   return (
     <Box minH="100vh" textAlign="center">

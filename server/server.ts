@@ -76,6 +76,7 @@ app.get('/api/auth/callback', async (req, res) => {
   const data = await shuffleApi.spotifyApi.authorizationCodeGrant(
     code as string
   );
+  // console.log(data);
   const { access_token, refresh_token, expires_in } = data.body;
 
   req.session.refresh_token = refresh_token;
@@ -127,7 +128,6 @@ app.get('/api/albums', async (req, res) => {
       const albums = mapAlbumMetadata(albumObjects);
       res.send(albums);
     } catch (err) {
-      console.log(err);
       res.send(err);
     }
   } else {
