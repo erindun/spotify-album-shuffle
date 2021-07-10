@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import theme from '../theme';
 import {
   Box,
@@ -29,41 +29,36 @@ import { useAccessTokenQuery } from '../utils/hooks/queries';
 
 export function Player(): JSX.Element {
   const { data: accessToken } = useAccessTokenQuery();
-  const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const closeAlertRef = useRef(null);
   const [seenAlert, setSeenAlert] = useLocalStorage('seenAlert', false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
-    data: albumsList,
+    data: albums,
     isFetching,
     refetch,
-  } = useQuery<Album[], Error>('albums', () => fetchAlbumsList(), {
-    select: (albums) => shuffle(albums),
-  });
-
-  const currentAlbum = useMemo(
-    () =>
-      albumsList && queueIndex < albumsList.length
-        ? albumsList[queueIndex]
-        : undefined,
-    [queueIndex, albumsList]
+  } = useQuery<Album[], Error>('albums', async () =>
+    shuffle(await fetchAlbumsList())
   );
 
-  const queue = useMemo(() => {
-    if (albumsList) {
+  const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
+  const currentAlbum = useMemo(
+    () =>
+      albums && queueIndex < albums.length ? albums[queueIndex] : undefined,
+    [queueIndex, albums]
+  );
+
+  const [queued, setQueued] = useState<string[] | undefined>(undefined);
+  useEffect(() => {
+    if (albums) {
       const tracks: string[] = [];
-      for (
-        let i = queueIndex;
-        i < albumsList.length && i < queueIndex + 2;
-        i++
-      ) {
-        tracks.push(...albumsList[i].uris);
+      for (let i = queueIndex; i < albums.length && i < queueIndex + 2; i++) {
+        tracks.push(...albums[i].uris);
       }
-      return tracks;
+      setQueued(tracks);
     }
-  }, [albumsList, queueIndex]);
+  }, [queueIndex, albums]);
 
   // effect: show alert modal if mobile is being used
   useEffect(() => {
@@ -121,7 +116,7 @@ export function Player(): JSX.Element {
           log out
         </Button>
       </Box>
-      {!(accessToken && currentAlbum && queue) || isFetching ? (
+      {!(accessToken && currentAlbum && queued) || isFetching ? (
         <Box mt={{ base: '15rem', md: '20rem' }} mx="auto" w="100%">
           <Spinner />
         </Box>
@@ -167,8 +162,8 @@ export function Player(): JSX.Element {
               <Button
                 onClick={() => setQueueIndex(queueIndex + 1)}
                 disabled={
-                  albumsList && albumsList.length
-                    ? queueIndex === albumsList.length - 1
+                  albums && albums.length
+                    ? queueIndex === albums.length - 1
                     : true
                 }
                 ml="1rem"
@@ -181,7 +176,7 @@ export function Player(): JSX.Element {
           <Box position="fixed" bottom={0} width="100%">
             <SpotifyPlayer
               token={accessToken.value}
-              uris={queue}
+              uris={queued}
               autoPlay
               styles={{
                 bgColor: spotifyBlack,
