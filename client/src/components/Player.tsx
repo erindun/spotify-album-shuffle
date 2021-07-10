@@ -39,10 +39,8 @@ export function Player(): JSX.Element {
     data: albumsList,
     isFetching,
     refetch,
-  } = useQuery<Album[], Error>('albums', async () => {
-    const albums = await fetchAlbumsList();
-    shuffle(albums);
-    return albums;
+  } = useQuery<Album[], Error>('albums', () => fetchAlbumsList(), {
+    select: (albums) => shuffle(albums),
   });
 
   const currentAlbum = useMemo(
