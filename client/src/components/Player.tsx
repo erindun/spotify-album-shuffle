@@ -20,11 +20,11 @@ import {
 import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
-import useLocalStorage from '../utils/useLocalStorage';
+import { useLocalStorage } from '../utils/hooks';
 import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
 import { AccessTokenContext } from '../utils/AccessTokenContext';
-import { shuffle } from '../utils/helpers';
+import { shuffle } from '../utils';
 import { useQuery } from 'react-query';
 
 const Player: React.FC = () => {
