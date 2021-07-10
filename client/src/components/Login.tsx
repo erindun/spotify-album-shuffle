@@ -4,7 +4,7 @@ import { FaGithub } from 'react-icons/fa';
 import { BiErrorCircle } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 
-const Login: React.FC = () => {
+export function Login(): JSX.Element {
   const { data: authUrl } = useQuery('authUrl', () => fetchAuthUrl());
 
   return (
@@ -59,6 +59,4 @@ const Login: React.FC = () => {
       </Link>
     </Flex>
   );
-};
-
-export default Login;
+}

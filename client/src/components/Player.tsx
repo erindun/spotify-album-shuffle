@@ -27,7 +27,7 @@ import { shuffle } from '../utils';
 import { useQuery } from 'react-query';
 import { useAccessTokenQuery } from '../utils/hooks/queries';
 
-const Player: React.FC = () => {
+export function Player(): JSX.Element {
   const { data: accessToken } = useAccessTokenQuery();
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -221,6 +221,4 @@ const Player: React.FC = () => {
       </AlertDialog>
     </Flex>
   );
-};
-
-export default Player;
+}

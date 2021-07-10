@@ -5,11 +5,11 @@ import {
   Switch,
 } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
-import Player from './components/Player';
-import Login from './components/Login';
+import { Player } from './components/Player';
+import { Login } from './components/Login';
 import { useAccessTokenQuery } from './utils/hooks/queries';
 
-const App: React.FC = () => {
+function App(): JSX.Element {
   const { data: accessToken } = useAccessTokenQuery();
 
   return (
@@ -29,6 +29,6 @@ const App: React.FC = () => {
       </Box>
     </Router>
   );
-};
+}
 
 export default App;
