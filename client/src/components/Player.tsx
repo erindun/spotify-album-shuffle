@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useContext, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import theme from '../theme';
 import {
   Box,
@@ -23,12 +23,13 @@ import { fetchAlbumsList, logout } from '../utils/api';
 import { useLocalStorage } from '../utils/hooks';
 import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
-import { AccessTokenContext } from '../utils/AccessTokenContext';
 import { shuffle } from '../utils';
 import { useQuery } from 'react-query';
+import { useAccessTokenQuery } from '../utils/hooks/queries';
 
 const Player: React.FC = () => {
-  const { state, dispatch } = useContext(AccessTokenContext);
+  const { data: accessToken } = useAccessTokenQuery();
+  // const { state, dispatch } = useContext(AccessTokenContext);
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const closeAlertRef = useRef(null);
@@ -93,7 +94,6 @@ const Player: React.FC = () => {
   const history = useHistory();
   async function onLogout() {
     await logout();
-    dispatch({ type: 'DELETE' });
     history.push('/');
   }
 
@@ -124,7 +124,7 @@ const Player: React.FC = () => {
           log out
         </Button>
       </Box>
-      {!(state.accessToken && currentAlbum && queue) || isFetching ? (
+      {!(accessToken && currentAlbum && queue) || isFetching ? (
         <Box mt={{ base: '15rem', md: '20rem' }} mx="auto" w="100%">
           <Spinner />
         </Box>
@@ -183,7 +183,7 @@ const Player: React.FC = () => {
           </Box>
           <Box position="fixed" bottom={0} width="100%">
             <SpotifyPlayer
-              token={state.accessToken.value}
+              token={accessToken.value}
               uris={queue}
               autoPlay
               styles={{

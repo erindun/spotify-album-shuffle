@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react';
-import { AccessTokenProvider } from './utils/AccessTokenContext';
 import theme from './theme';
 import 'focus-visible/dist/focus-visible';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -21,10 +20,8 @@ ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <AccessTokenProvider>
-          <ReactQueryDevtools />
-          <App />
-        </AccessTokenProvider>
+        <ReactQueryDevtools />
+        <App />
       </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>,

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Flex, Box, Button, Text, Heading, Link } from '@chakra-ui/react';
 import { fetchAuthUrl } from '../utils/api';
 import { FaGithub } from 'react-icons/fa';
