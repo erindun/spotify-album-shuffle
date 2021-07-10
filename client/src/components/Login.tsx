@@ -2,6 +2,7 @@ import React from 'react';
 import { Flex, Box, Button, Text, Heading, Link } from '@chakra-ui/react';
 import { fetchAuthUrl } from '../utils/api';
 import { FaGithub } from 'react-icons/fa';
+import { BiErrorCircle } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 
 const Login: React.FC = () => {
@@ -23,15 +24,22 @@ const Login: React.FC = () => {
         alleviate the burden of having too many choices when you feel like
         listening to a full album. :)
       </Text>
-      {!authUrl ? null : (
-        <Box>
-          <a href={authUrl}>
-            <Button size="lg" mt="3rem" bg="spotifyGreen" to={authUrl}>
-              log in with Spotify
-            </Button>
-          </a>
-        </Box>
-      )}
+      <Box>
+        <a href={authUrl}>
+          <Button
+            leftIcon={!authUrl ? <BiErrorCircle /> : undefined}
+            size="lg"
+            mt="3rem"
+            bg="spotifyGreen"
+            to={authUrl}
+            disabled={!authUrl}
+          >
+            {authUrl
+              ? 'log in with Spotify'
+              : "can't connect to Spotify server"}
+          </Button>
+        </a>
+      </Box>
       <Text mt="4rem" fontSize="0.75rem">
         Note: Using the web player requires a Spotify Premium account. You can
         still use this application without a Premium account to generate a
