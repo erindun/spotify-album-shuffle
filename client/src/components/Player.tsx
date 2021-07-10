@@ -29,7 +29,6 @@ import { useAccessTokenQuery } from '../utils/hooks/queries';
 
 const Player: React.FC = () => {
   const { data: accessToken } = useAccessTokenQuery();
-  // const { state, dispatch } = useContext(AccessTokenContext);
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const closeAlertRef = useRef(null);
