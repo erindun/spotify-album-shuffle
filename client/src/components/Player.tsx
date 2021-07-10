@@ -4,9 +4,6 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
-  Text,
-  Image,
   Spinner,
   useMediaQuery,
   AlertDialog,
@@ -17,7 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogBody,
 } from '@chakra-ui/react';
-import { ArrowBackIcon, ArrowForwardIcon, RepeatIcon } from '@chakra-ui/icons';
+import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
 import { useLocalStorage } from '../utils/hooks';
@@ -26,6 +23,8 @@ import { Album } from 'common';
 import { shuffle } from '../utils';
 import { useQuery } from 'react-query';
 import { useAccessTokenQuery } from '../utils/hooks/queries';
+import { AlbumInfo } from './AlbumInfo';
+import { PlayAlbumButton } from './PlayAlbumButton';
 
 export function Player(): JSX.Element {
   const { data: accessToken } = useAccessTokenQuery();
@@ -95,8 +94,13 @@ export function Player(): JSX.Element {
     theme.colors;
 
   return (
-    <Flex textAlign="center" justifyContent="space-between" direction="column">
-      <Box pt={{ base: '1rem' }}>
+    <Flex
+      h="100%"
+      textAlign="center"
+      justifyContent="center"
+      direction="column"
+    >
+      <Box justifySelf="flex-start" mb="3rem">
         <Button
           onClick={() => refetch()}
           w="12.5rem"
@@ -116,81 +120,45 @@ export function Player(): JSX.Element {
           log out
         </Button>
       </Box>
-      {!(accessToken && currentAlbum && queued) || isFetching ? (
-        <Box mt={{ base: '15rem', md: '20rem' }} mx="auto" w="100%">
-          <Spinner />
-        </Box>
-      ) : (
-        <>
-          <Box>
-            <Box mt={{ base: '0.5rem', sm: '1rem' }}>
-              <Text display={{ base: 'none', md: 'block' }}>now playing</Text>
-              <Heading
-                fontSize="1.5rem"
-                textOverflow="ellipsis"
-                overflow="hidden"
-                wordBreak="break-word"
-              >
-                {currentAlbum.name}
-              </Heading>
-              <Text>by</Text>
-              <Heading
-                fontSize="1.5rem"
-                textOverflow="ellipsis"
-                overflow="hidden"
-                wordBreak="break-word"
-              >
-                {currentAlbum.artist}
-              </Heading>
-            </Box>
+      <Flex direction="column" h="16rem" justify="center" align="center">
+        {!(accessToken && currentAlbum && queued) || isFetching ? (
+          <Flex justify="center" align="center">
+            <Spinner />
+          </Flex>
+        ) : (
+          <>
             <Flex justify="center" align="center" mt="1rem">
-              <Button
+              <PlayAlbumButton
+                direction="previous"
                 onClick={() => setQueueIndex(queueIndex - 1)}
-                disabled={queueIndex === 0}
-                mr="1rem"
-              >
-                <ArrowBackIcon mr={{ md: '0.5rem' }} />
-                <Text display={{ base: 'none', md: 'block' }}>
-                  previous album
-                </Text>
-              </Button>
-              <Image
-                h={{ base: '12rem' }}
-                src={currentAlbum.artworkUrl}
-                alt=""
+                disabled={!albums || queueIndex === 0}
               />
-              <Button
+              <AlbumInfo album={currentAlbum} />
+              <PlayAlbumButton
+                direction="next"
                 onClick={() => setQueueIndex(queueIndex + 1)}
-                disabled={
-                  albums && albums.length
-                    ? queueIndex === albums.length - 1
-                    : true
-                }
-                ml="1rem"
-              >
-                <Text display={{ base: 'none', md: 'block' }}>next album</Text>
-                <ArrowForwardIcon ml={{ md: '0.5rem' }} />
-              </Button>
+                disabled={!albums || queueIndex === albums.length - 1}
+              />
             </Flex>
-          </Box>
-          <Box position="fixed" bottom={0} width="100%">
-            <SpotifyPlayer
-              token={accessToken.value}
-              uris={queued}
-              autoPlay
-              styles={{
-                bgColor: spotifyBlack,
-                color: spotifyLightGray,
-                trackNameColor: spotifyLightGray,
-                sliderHandleColor: spotifyLightGray,
-                sliderColor: spotifyGreen,
-                sliderTrackColor: spotifyMedGray,
-              }}
-              callback={onPlayerUpdate}
-            />
-          </Box>
-        </>
-      )}
+            <Box position="fixed" bottom={0} width="100%">
+              <SpotifyPlayer
+                token={accessToken.value}
+                uris={queued}
+                autoPlay
+                styles={{
+                  bgColor: spotifyBlack,
+                  color: spotifyLightGray,
+                  trackNameColor: spotifyLightGray,
+                  sliderHandleColor: spotifyLightGray,
+                  sliderColor: spotifyGreen,
+                  sliderTrackColor: spotifyMedGray,
+                }}
+                callback={onPlayerUpdate}
+              />
+            </Box>
+          </>
+        )}
+      </Flex>
       <AlertDialog
         isOpen={isOpen}
         onClose={onCloseAlert}
