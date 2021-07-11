@@ -20,8 +20,12 @@ export function Player(): JSX.Element {
     error: albumsError,
     isFetching,
     refetch,
-  } = useQuery<Album[], Error>('albums', async () =>
-    shuffle(await fetchAlbumsList())
+  } = useQuery<Album[], Error>(
+    'albums',
+    async () => shuffle(await fetchAlbumsList()),
+    {
+      staleTime: 1000 * 3600 * 24, // 24 hours
+    }
   );
   const errors = [accessTokenError, albumsError].filter(
     (error) => !!error
@@ -45,7 +49,7 @@ export function Player(): JSX.Element {
     }
   }, [queueIndex, albums]);
 
-  async function onPlayerUpdate(state: CallbackState) {
+  function onPlayerUpdate(state: CallbackState) {
     if (
       currentAlbum &&
       !currentAlbum.uris.includes(state.track.uri) &&
@@ -54,6 +58,11 @@ export function Player(): JSX.Element {
     ) {
       setQueueIndex(queueIndex + 1);
     }
+  }
+
+  function onReload() {
+    setQueueIndex(0);
+    refetch();
   }
 
   const history = useHistory();
@@ -76,7 +85,7 @@ export function Player(): JSX.Element {
     >
       <Box mt="3rem">
         <Button
-          onClick={() => refetch()}
+          onClick={onReload}
           w="12.5rem"
           mr="0.25rem"
           disabled={isFetching}
