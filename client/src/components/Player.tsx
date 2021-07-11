@@ -1,19 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import theme from '../theme';
-import {
-  Box,
-  Button,
-  Flex,
-  Spinner,
-  useMediaQuery,
-  AlertDialog,
-  AlertDialogContent,
-  useDisclosure,
-  AlertDialogOverlay,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogBody,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Spinner, Text } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
@@ -27,19 +14,18 @@ import { AlbumInfo } from './AlbumInfo';
 import { PlayAlbumButton } from './PlayAlbumButton';
 
 export function Player(): JSX.Element {
-  const { data: accessToken } = useAccessTokenQuery();
-  const isDesktop = useMediaQuery('(min-width: 768px)');
-  const closeAlertRef = useRef(null);
-  const [seenAlert, setSeenAlert] = useLocalStorage('seenAlert', false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { data: accessToken, error: accessTokenError } = useAccessTokenQuery();
   const {
     data: albums,
+    error: albumsError,
     isFetching,
     refetch,
   } = useQuery<Album[], Error>('albums', async () =>
     shuffle(await fetchAlbumsList())
   );
+  const errors = [accessTokenError, albumsError].filter(
+    (error) => !!error
+  ) as Error[];
 
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const currentAlbum = useMemo(
@@ -59,13 +45,6 @@ export function Player(): JSX.Element {
     }
   }, [queueIndex, albums]);
 
-  // effect: show alert modal if mobile is being used
-  useEffect(() => {
-    if (!isDesktop[0] && !seenAlert) {
-      onOpen();
-    }
-  }, [isDesktop, seenAlert, onOpen]);
-
   async function onPlayerUpdate(state: CallbackState) {
     if (
       currentAlbum &&
@@ -75,11 +54,6 @@ export function Player(): JSX.Element {
     ) {
       setQueueIndex(queueIndex + 1);
     }
-  }
-
-  function onCloseAlert() {
-    setSeenAlert(true);
-    onClose();
   }
 
   const history = useHistory();
@@ -97,10 +71,10 @@ export function Player(): JSX.Element {
     <Flex
       h="100%"
       textAlign="center"
-      justifyContent="center"
+      justifyContent="space-between"
       direction="column"
     >
-      <Box justifySelf="flex-start" mb="3rem">
+      <Box mt="3rem">
         <Button
           onClick={() => refetch()}
           w="12.5rem"
@@ -108,78 +82,59 @@ export function Player(): JSX.Element {
           disabled={isFetching}
         >
           {isFetching ? (
-            'loading...'
+            'Loading...'
           ) : (
             <>
-              reload and reshuffle
+              Reload and reshuffle
               <RepeatIcon ml="0.5rem" />
             </>
           )}
         </Button>
         <Button onClick={onLogout} ml="0.25rem" bgColor="spotifyGreen">
-          log out
+          Log out
         </Button>
       </Box>
-      <Flex direction="column" h="16rem" justify="center" align="center">
-        {!(accessToken && currentAlbum && queued) || isFetching ? (
-          <Flex justify="center" align="center">
-            <Spinner />
+      {errors.length > 0 ? (
+        <Text>{errors[0].message}</Text>
+      ) : !(accessToken && currentAlbum && queued) || isFetching ? (
+        <Flex justify="center" align="center">
+          <Spinner />
+        </Flex>
+      ) : (
+        <>
+          <Flex justify="center" align="center" mt="1rem" mx="1rem">
+            <PlayAlbumButton
+              direction="previous"
+              onClick={() => setQueueIndex(queueIndex - 1)}
+              disabled={!albums || queueIndex === 0}
+            />
+            <AlbumInfo album={currentAlbum} />
+            <PlayAlbumButton
+              direction="next"
+              onClick={() => setQueueIndex(queueIndex + 1)}
+              disabled={!albums || queueIndex === albums.length - 1}
+            />
           </Flex>
-        ) : (
-          <>
-            <Flex justify="center" align="center" mt="1rem">
-              <PlayAlbumButton
-                direction="previous"
-                onClick={() => setQueueIndex(queueIndex - 1)}
-                disabled={!albums || queueIndex === 0}
-              />
-              <AlbumInfo album={currentAlbum} />
-              <PlayAlbumButton
-                direction="next"
-                onClick={() => setQueueIndex(queueIndex + 1)}
-                disabled={!albums || queueIndex === albums.length - 1}
-              />
-            </Flex>
-            <Box position="fixed" bottom={0} width="100%">
-              <SpotifyPlayer
-                token={accessToken.value}
-                uris={queued}
-                autoPlay
-                styles={{
-                  bgColor: spotifyBlack,
-                  color: spotifyLightGray,
-                  trackNameColor: spotifyLightGray,
-                  sliderHandleColor: spotifyLightGray,
-                  sliderColor: spotifyGreen,
-                  sliderTrackColor: spotifyMedGray,
-                }}
-                callback={onPlayerUpdate}
-              />
-            </Box>
-          </>
-        )}
-      </Flex>
-      <AlertDialog
-        isOpen={isOpen}
-        onClose={onCloseAlert}
-        leastDestructiveRef={closeAlertRef}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent bgColor="spotifyDarkGray">
-            <AlertDialogHeader>using mobile?</AlertDialogHeader>
-            <AlertDialogBody>
-              To listen on mobile, open the Spotify app on your device and
-              select it from the web player's Connect menu.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={closeAlertRef} onClick={onCloseAlert}>
-                OK
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+        </>
+      )}
+      <Box h="3rem">
+        {accessToken ? (
+          <SpotifyPlayer
+            token={accessToken.value}
+            uris={queued}
+            autoPlay
+            styles={{
+              bgColor: spotifyBlack,
+              color: spotifyLightGray,
+              trackNameColor: spotifyLightGray,
+              sliderHandleColor: spotifyLightGray,
+              sliderColor: spotifyGreen,
+              sliderTrackColor: spotifyMedGray,
+            }}
+            callback={onPlayerUpdate}
+          />
+        ) : null}
+      </Box>
     </Flex>
   );
 }

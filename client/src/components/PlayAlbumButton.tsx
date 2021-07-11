@@ -7,21 +7,19 @@ interface PlayAlbumButtonProps extends ButtonProps {
 
 export function PlayAlbumButton({
   direction,
-  onClick,
-  disabled,
+  ...props
 }: PlayAlbumButtonProps): JSX.Element {
   const isPrevious = direction === 'previous';
   const Icon = isPrevious ? ArrowBackIcon : ArrowForwardIcon;
 
   return (
     <Button
-      onClick={onClick}
-      disabled={disabled}
       leftIcon={isPrevious ? <Icon /> : undefined}
       rightIcon={!isPrevious ? <Icon /> : undefined}
+      {...props}
     >
       <Text display={{ base: 'none', md: 'block' }}>
-        {isPrevious ? 'previous' : 'next'} album
+        {isPrevious ? 'Previous' : 'Next'} album
       </Text>
     </Button>
   );
