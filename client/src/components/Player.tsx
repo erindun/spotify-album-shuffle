@@ -8,7 +8,7 @@ import { useLocalStorage } from '../utils/hooks';
 import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
 import { shuffle } from '../utils';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useAccessTokenQuery } from '../utils/hooks/queries';
 import { AlbumInfo } from './AlbumInfo';
 import { PlayAlbumButton } from './PlayAlbumButton';
@@ -65,9 +65,11 @@ export function Player(): JSX.Element {
     refetch();
   }
 
+  const queryClient = useQueryClient();
   const history = useHistory();
   async function onLogout() {
     await logout();
+    queryClient.invalidateQueries('accessToken');
     history.push('/');
   }
 
