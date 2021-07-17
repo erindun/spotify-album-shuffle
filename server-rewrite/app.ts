@@ -1,9 +1,14 @@
 import express from 'express';
+import session from 'express-session';
+import cors from 'cors';
 import dotenv from 'dotenv';
+import pg from 'pg';
+import connectPgSession from 'connect-pg-simple';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { authRouter } from './routes/auth';
 import { albumsRouter } from './routes/albums';
 
+// Add additional properties to session store.
 declare module 'express-session' {
   export interface SessionData {
     refresh_token: string;
@@ -19,6 +24,30 @@ if (process.env.NODE_ENV === 'development') {
 
 dotenv.config();
 const app = express();
+app.use(cors({ credentials: true, origin: clientUrl }));
+
+// Connect to database.
+const pgSession = connectPgSession(session);
+const { Pool } = pg;
+const pool = new Pool({
+  user: process.env.PGUSER,
+  host: 'localhost',
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: 5432,
+});
+app.use(
+  session({
+    store: new pgSession({
+      pool: pool,
+    }),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+  })
+);
 
 export const spotifyApi = new SpotifyWebApi({
   // TODO handle invalid Spotify API credentials.
@@ -29,8 +58,8 @@ export const spotifyApi = new SpotifyWebApi({
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 });
 
-app.use('/auth', authRouter);
-app.use('/albums', albumsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/albums', albumsRouter);
 
 const port = 5000;
 app.listen(port, () => {
