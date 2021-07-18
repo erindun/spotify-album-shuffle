@@ -78,3 +78,9 @@ authRouter.get('/token', async (req, res) => {
     res.status(401);
   }
 });
+
+authRouter.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.end();
+  });
+});

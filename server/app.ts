@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -24,6 +25,10 @@ if (process.env.NODE_ENV === 'development') {
 
 dotenv.config();
 const app = express();
+
+// Have Node serve the files for our built React app.
+app.use(express.static(path.resolve(__dirname, '../client/build')));
+
 app.use(cors({ credentials: true, origin: clientUrl }));
 
 // Connect to database.
@@ -58,8 +63,16 @@ export const spotifyApi = new SpotifyWebApi({
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 });
 
-app.use('/api/auth', authRouter);
-app.use('/api/albums', albumsRouter);
+// Set up API router.
+const apiRouter = express.Router();
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/albums', albumsRouter);
+app.use('/api/', apiRouter);
+
+// All other GET requests not handled before will return our React app.
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+});
 
 const port = 5000;
 app.listen(port, () => {
