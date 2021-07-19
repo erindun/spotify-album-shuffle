@@ -18,16 +18,13 @@ declare module 'express-session' {
   }
 }
 
-export let clientUrl = 'https://spotifyalbumshuffle.com';
-if (process.env.NODE_ENV === 'development') {
-  clientUrl = 'http://localhost:3000';
-}
+export const clientUrl =
+  process.env.NODE_ENV === 'production'
+    ? 'https://spotifyalbumshuffle.com'
+    : 'http://localhost:3000';
 
 dotenv.config();
 const app = express();
-
-// Have Node serve the files for our built React app.
-app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 app.use(cors({ credentials: true, origin: clientUrl }));
 
@@ -69,10 +66,14 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/albums', albumsRouter);
 app.use('/api/', apiRouter);
 
-// All other GET requests not handled before will return our React app.
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-});
+// In production, serve the built React app.
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.resolve(__dirname, '../client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+  });
+}
 
 const port = 5000;
 app.listen(port, () => {

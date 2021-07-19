@@ -1,7 +1,7 @@
 import express from 'express';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { spotifyApi } from '../app';
-import { Album } from '../types';
+import { Album } from 'common';
 
 /** Fetches all saved albums from the user's Spotify library. */
 async function fetchAllSavedAlbums(

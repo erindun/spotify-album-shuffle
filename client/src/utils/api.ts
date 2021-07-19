@@ -1,14 +1,9 @@
 import axios from 'axios';
 import { AccessToken, Album } from 'common';
 
-const apiUrl =
-  process.env.NODE_ENV === 'production'
-    ? 'https://spotifyalbumshuffle.com/api'
-    : 'http://localhost:5000/api';
-
 export async function fetchAccessToken(): Promise<AccessToken> {
   try {
-    const response = await axios.get<AccessToken>(`${apiUrl}/auth/token`, {
+    const response = await axios.get<AccessToken>('/api/auth/token', {
       withCredentials: true,
     });
     return response.data;
@@ -19,7 +14,7 @@ export async function fetchAccessToken(): Promise<AccessToken> {
 
 export async function fetchAuthUrl(): Promise<string> {
   try {
-    const response = await axios.get<string>(`${apiUrl}/auth`);
+    const response = await axios.get<string>('/api/auth');
     return response.data;
   } catch {
     throw new Error("Can't connect to server");
@@ -27,14 +22,14 @@ export async function fetchAuthUrl(): Promise<string> {
 }
 
 export async function logout(): Promise<void> {
-  await axios.get(`${apiUrl}/auth/logout`, {
+  await axios.get('/api/auth/logout', {
     withCredentials: true,
   });
 }
 
 export async function fetchAlbumsList(): Promise<Album[]> {
   try {
-    const response = await axios.get<Album[]>(`${apiUrl}/albums`, {
+    const response = await axios.get<Album[]>('/api/albums', {
       withCredentials: true,
     });
     return response.data;

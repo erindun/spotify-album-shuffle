@@ -1,6 +1,6 @@
 import express from 'express';
-import { spotifyApi, clientUrl } from '../app';
-import { AccessToken } from '../types';
+import { clientUrl, spotifyApi } from '../app';
+import { AccessToken } from 'common';
 
 /** Router for `/api/auth`. */
 export const authRouter = express.Router();
@@ -44,6 +44,8 @@ authRouter.get('/callback', async (req, res) => {
     req.session.refresh_token = refresh_token;
     req.session.access_token = access_token;
 
+    // Because we are using a proxy, redirect to player
+    // using the absolute path.
     res.redirect(`${clientUrl}/player`);
   } catch (err) {
     res.send(err);
