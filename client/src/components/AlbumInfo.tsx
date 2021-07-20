@@ -5,9 +5,10 @@ interface AlbumInfoProps extends BoxProps {
   album: Album;
 }
 
-export function AlbumInfo({ album }: AlbumInfoProps): JSX.Element {
+export function AlbumInfo(props: AlbumInfoProps): JSX.Element {
+  const { album } = props;
   return (
-    <Box>
+    <Box {...props}>
       <Text h="4rem" w="16rem" textOverflow="ellipsis" fontWeight="bold">
         {album.name}
         <br />
