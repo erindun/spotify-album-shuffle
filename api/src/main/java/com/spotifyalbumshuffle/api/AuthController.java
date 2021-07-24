@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wrapper.spotify.SpotifyApi;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
 
@@ -23,6 +24,12 @@ public class AuthController {
             .build();
 
     @GetMapping("/api/auth")
+    public boolean isAuthorized(HttpServletRequest req) {
+        // TODO
+        return false;
+    }
+
+    @GetMapping("/api/auth/code-uri")
     public URI getAuthorizationCodeUri() {
         return authorizationCodeUriRequest.execute();
     }
@@ -40,5 +47,10 @@ public class AuthController {
     @GetMapping("/api/auth/token")
     public String getAccessToken(HttpSession session) {
         return (String) session.getAttribute("accessToken");
+    }
+
+    @GetMapping("/api/auth/logout")
+    public void logout(HttpServletRequest req) {
+        req.getSession().invalidate();
     }
 }
