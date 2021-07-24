@@ -1,12 +1,13 @@
 package com.spotifyalbumshuffle.api;
 
-import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.wrapper.spotify.SpotifyApi;
+import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpSession;
 import java.net.URI;
 
 @RestController
@@ -21,15 +22,23 @@ public class AuthController {
             .scope("streaming,user-read-email,user-read-private,user-library-read,user-library-modify,user-read-playback-state,user-modify-playback-state")
             .build();
 
-    @GetMapping("/auth")
+    @GetMapping("/api/auth")
     public URI getAuthorizationCodeUri() {
         return authorizationCodeUriRequest.execute();
     }
 
-    @GetMapping("/auth/callback")
-    public AuthorizationCodeCredentials createSession(@RequestParam String code) throws Exception {
+    @GetMapping("/api/auth/callback")
+    public RedirectView createSession(@RequestParam String code, HttpSession session) throws Exception {
         var authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
         var authorizationCodeCredentials = authorizationCodeRequest.execute();
-        return authorizationCodeCredentials;
+        session.setAttribute("accessToken", authorizationCodeCredentials.getAccessToken());
+        session.setAttribute("refreshToken", authorizationCodeCredentials.getRefreshToken());
+        session.setAttribute("expiresIn", authorizationCodeCredentials.getExpiresIn());
+        return new RedirectView("http://localhost:3000/player");
+    }
+
+    @GetMapping("/api/auth/token")
+    public String getAccessToken(HttpSession session) {
+        return (String) session.getAttribute("accessToken");
     }
 }
