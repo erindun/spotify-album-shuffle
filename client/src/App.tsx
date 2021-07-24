@@ -19,11 +19,9 @@ function App(): JSX.Element {
           <Route exact path="/">
             {accessToken ? <Redirect to="/player" /> : <Login />}
           </Route>
-          {accessToken ? (
-            <Route exact path="/player">
-              <Player />
-            </Route>
-          ) : null}
+          <Route exact path="/player">
+            <Player />
+          </Route>
           <Redirect to="/" />
         </Switch>
       </Box>
