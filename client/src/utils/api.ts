@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { AccessToken, Album } from 'common';
+import { Album } from 'common';
 
-export async function fetchAccessToken(): Promise<AccessToken> {
+export async function fetchAccessToken(): Promise<string> {
   try {
-    const response = await axios.get<AccessToken>('/api/auth/token', {
+    const response = await axios.get<string>('/api/auth/token', {
       withCredentials: true,
     });
     return response.data;

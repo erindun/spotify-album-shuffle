@@ -131,7 +131,7 @@ export function Player(): JSX.Element {
       <Box h="3rem">
         {accessToken ? (
           <SpotifyPlayer
-            token={accessToken.value}
+            token={accessToken}
             uris={queued}
             autoPlay
             styles={{
