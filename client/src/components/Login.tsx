@@ -7,10 +7,8 @@ import {
   Link,
   Spinner,
 } from '@chakra-ui/react';
-import { fetchAuthUrl } from '../utils/api';
 import { FaGithub } from 'react-icons/fa';
 import { BiErrorCircle } from 'react-icons/bi';
-import { useQuery } from 'react-query';
 import { useAuthUrl } from '../utils/queries';
 
 export function Login(): JSX.Element {
