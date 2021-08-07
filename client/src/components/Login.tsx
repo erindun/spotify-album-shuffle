@@ -40,7 +40,7 @@ export function Login(): JSX.Element {
             leftIcon={error ? <BiErrorCircle /> : undefined}
             size="lg"
             my="2.5rem"
-            w="13rem"
+            w="100%"
             bg="spotifyGreen"
             to={authUrl}
             disabled={!authUrl}
@@ -48,7 +48,7 @@ export function Login(): JSX.Element {
             {authUrl ? (
               'Log in with Spotify'
             ) : error ? (
-              error.message
+              "Can't connect to server"
             ) : (
               <Spinner />
             )}
