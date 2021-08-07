@@ -1,4 +1,4 @@
-import { Box, Spinner } from '@chakra-ui/react';
+import { Flex, Spinner } from '@chakra-ui/react';
 import { Player } from './components/Player';
 import { Login } from './components/Login';
 import { useAccessToken } from './utils/queries';
@@ -6,12 +6,16 @@ import { useAccessToken } from './utils/queries';
 function App(): JSX.Element {
   const { data: accessToken, isLoading } = useAccessToken();
 
-  if (isLoading) return <Spinner />;
-
   return (
-    <Box h="100vh">
-      {accessToken ? <Player accessToken={accessToken} /> : <Login />}
-    </Box>
+    <Flex h="100vh" bgColor="spotifyDarkGray" justify="center" align="center">
+      {isLoading ? (
+        <Spinner />
+      ) : accessToken ? (
+        <Player accessToken={accessToken} />
+      ) : (
+        <Login />
+      )}
+    </Flex>
   );
 }
 
