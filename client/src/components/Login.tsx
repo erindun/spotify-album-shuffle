@@ -8,7 +8,7 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
-import { BiErrorCircle } from 'react-icons/bi';
+import { WarningIcon } from '@chakra-ui/icons';
 import { useAuthUrl } from '../utils/queries';
 
 export function Login(): JSX.Element {
@@ -34,7 +34,7 @@ export function Login(): JSX.Element {
       <Box>
         <a href={authUrl}>
           <Button
-            leftIcon={error ? <BiErrorCircle /> : undefined}
+            leftIcon={error ? <WarningIcon /> : undefined}
             size="lg"
             my="2.5rem"
             w="100%"
