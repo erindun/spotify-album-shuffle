@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Album } from 'common';
 
+/** Fetch the current user's Spotify API access token. */
 export async function fetchAccessToken(): Promise<string> {
   try {
     const response = await axios.get<string>('/api/auth/token', {
@@ -12,6 +13,7 @@ export async function fetchAccessToken(): Promise<string> {
   }
 }
 
+/** Fetch the URL for the application's Spotify auth login. */
 export async function fetchAuthUrl(): Promise<string> {
   try {
     const response = await axios.get<string>('/api/auth/code-uri');
@@ -21,12 +23,14 @@ export async function fetchAuthUrl(): Promise<string> {
   }
 }
 
+/** Log out of current user. */
 export async function logout(): Promise<void> {
   await axios.get('/api/auth/logout', {
     withCredentials: true,
   });
 }
 
+/** Fetch all albums in the user's Spotify library. */
 export async function fetchAlbumsList(): Promise<Album[]> {
   try {
     const response = await axios.get<Album[]>('/api/albums', {
