@@ -1,6 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
 
-export default extendTheme({
+export const theme = extendTheme({
   colors: {
     spotifyBlack: '#121212',
     spotifyDarkGray: '#212121',

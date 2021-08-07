@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import theme from '../theme';
+import { theme } from '../theme';
 import { Box, Button, Flex, Spinner, Text } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';

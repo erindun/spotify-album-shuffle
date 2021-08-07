@@ -2,28 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ChakraProvider } from '@chakra-ui/react';
-import theme from './theme';
-import 'focus-visible/dist/focus-visible';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { AppProviders } from './AppProviders';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
-        <App />
-      </QueryClientProvider>
-    </ChakraProvider>
+    <AppProviders>
+      <App />
+    </AppProviders>
   </React.StrictMode>,
   document.getElementById('root')
 );
