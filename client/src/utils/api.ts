@@ -34,7 +34,7 @@ export async function logout(): Promise<void> {
 }
 
 /** Fetch all albums in the user's Spotify library. */
-export async function fetchAlbumsList(): Promise<Album[]> {
+export async function fetchAlbums(): Promise<Album[]> {
   try {
     const response = await fetch('/api/albums', {
       credentials: 'same-origin',

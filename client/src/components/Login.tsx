@@ -11,11 +11,10 @@ import { fetchAuthUrl } from '../utils/api';
 import { FaGithub } from 'react-icons/fa';
 import { BiErrorCircle } from 'react-icons/bi';
 import { useQuery } from 'react-query';
+import { useAuthUrl } from '../utils/queries';
 
 export function Login(): JSX.Element {
-  const { data: authUrl, error } = useQuery<string, Error>('authUrl', () =>
-    fetchAuthUrl()
-  );
+  const { data: authUrl, error } = useAuthUrl();
 
   return (
     <Flex

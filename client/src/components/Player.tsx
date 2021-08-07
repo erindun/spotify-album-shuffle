@@ -3,30 +3,19 @@ import { theme } from '../theme';
 import { Box, Button, Flex, Spinner, Text } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
-import { fetchAlbumsList, logout } from '../utils/api';
+import { logout } from '../utils/api';
 import { useLocalStorage } from '../utils/utils';
-import { shuffle } from '../utils/utils';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { AlbumInfo } from './AlbumInfo';
 import { PlayAlbumButton } from './PlayAlbumButton';
+import { useAlbums } from '../utils/queries';
 
 interface PlayerProps {
   accessToken: string;
 }
 
 export function Player({ accessToken }: PlayerProps): JSX.Element {
-  const {
-    data: albums,
-    error: albumsError,
-    isFetching,
-    refetch,
-  } = useQuery<Album[], Error>(
-    'albums',
-    async () => shuffle(await fetchAlbumsList()),
-    {
-      staleTime: 1000 * 3600 * 24, // 24 hours
-    }
-  );
+  const { data: albums, error: albumsError, isFetching, refetch } = useAlbums();
 
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const currentAlbum = useMemo(

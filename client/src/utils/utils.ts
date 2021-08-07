@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
-import { fetchAccessToken } from './api';
 
 /** Shuffles an array in-place. */
 export function shuffle<T>(array: T[]): T[] {
@@ -9,14 +7,6 @@ export function shuffle<T>(array: T[]): T[] {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
-}
-
-/** Query hook for {@link fetchAccessToken}. */
-export function useAccessToken(): UseQueryResult<string, Error> {
-  return useQuery<string, Error>('accessToken', () => fetchAccessToken(), {
-    refetchInterval: (1000 * 3600) / 2, // 30 minutes
-    refetchIntervalInBackground: true,
-  });
 }
 
 /**

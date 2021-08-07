@@ -1,7 +1,7 @@
 import { Box, Spinner } from '@chakra-ui/react';
 import { Player } from './components/Player';
 import { Login } from './components/Login';
-import { useAccessToken } from './utils/utils';
+import { useAccessToken } from './utils/queries';
 
 function App(): JSX.Element {
   const { data: accessToken, isLoading } = useAccessToken();
