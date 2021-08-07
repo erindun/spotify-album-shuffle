@@ -5,16 +5,17 @@ import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
 import { useLocalStorage } from '../utils/hooks';
-import { useHistory } from 'react-router-dom';
 import { Album } from 'common';
 import { shuffle } from '../utils';
-import { useQuery } from 'react-query';
-import { useAccessTokenQuery } from '../utils/hooks/queries';
+import { useQuery, useQueryClient } from 'react-query';
 import { AlbumInfo } from './AlbumInfo';
 import { PlayAlbumButton } from './PlayAlbumButton';
 
-export function Player(): JSX.Element {
-  const { data: accessToken, error: accessTokenError } = useAccessTokenQuery();
+interface PlayerProps {
+  accessToken: string;
+}
+
+export function Player({ accessToken }: PlayerProps): JSX.Element {
   const {
     data: albums,
     error: albumsError,
@@ -27,9 +28,6 @@ export function Player(): JSX.Element {
       staleTime: 1000 * 3600 * 24, // 24 hours
     }
   );
-  const errors = [accessTokenError, albumsError].filter(
-    (error) => !!error
-  ) as Error[];
 
   const [queueIndex, setQueueIndex] = useLocalStorage('queueIndex', 0);
   const currentAlbum = useMemo(
@@ -65,10 +63,10 @@ export function Player(): JSX.Element {
     refetch();
   }
 
-  const history = useHistory();
+  const queryClient = useQueryClient();
   async function onLogout() {
     await logout();
-    history.push('/');
+    queryClient.invalidateQueries('accessToken');
   }
 
   // Chakra-UI theme values can't be passed to
@@ -103,9 +101,9 @@ export function Player(): JSX.Element {
           Log out
         </Button>
       </Box>
-      {errors.length > 0 ? (
-        <Text>{errors[0].message}</Text>
-      ) : !(accessToken && currentAlbum && queued) || isFetching ? (
+      {albumsError ? (
+        <Text>{albumsError}</Text>
+      ) : !(currentAlbum && queued) || isFetching ? (
         <Flex justify="center" align="center">
           <Spinner />
         </Flex>
@@ -127,22 +125,20 @@ export function Player(): JSX.Element {
         </>
       )}
       <Box h="3rem">
-        {accessToken ? (
-          <SpotifyPlayer
-            token={accessToken}
-            uris={queued}
-            autoPlay
-            styles={{
-              bgColor: spotifyBlack,
-              color: spotifyLightGray,
-              trackNameColor: spotifyLightGray,
-              sliderHandleColor: spotifyLightGray,
-              sliderColor: spotifyGreen,
-              sliderTrackColor: spotifyMedGray,
-            }}
-            callback={onPlayerUpdate}
-          />
-        ) : null}
+        <SpotifyPlayer
+          token={accessToken}
+          uris={queued}
+          autoPlay
+          styles={{
+            bgColor: spotifyBlack,
+            color: spotifyLightGray,
+            trackNameColor: spotifyLightGray,
+            sliderHandleColor: spotifyLightGray,
+            sliderColor: spotifyGreen,
+            sliderTrackColor: spotifyMedGray,
+          }}
+          callback={onPlayerUpdate}
+        />
       </Box>
     </Flex>
   );

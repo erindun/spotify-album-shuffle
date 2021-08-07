@@ -1,34 +1,17 @@
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
+import { Box, Spinner } from '@chakra-ui/react';
 import { Player } from './components/Player';
 import { Login } from './components/Login';
-import { fetchAuthStatus } from './utils/api';
-import { useQuery } from 'react-query';
+import { useAccessTokenQuery } from './utils/hooks/queries';
 
 function App(): JSX.Element {
-  const { data: isAuthorized } = useQuery('isAuthorized', () =>
-    fetchAuthStatus()
-  );
+  const { data: accessToken, isLoading } = useAccessTokenQuery();
+
+  if (isLoading) return <Spinner />;
 
   return (
-    <Router>
-      <Box bg="spotifyDarkGray" h="100vh">
-        <Switch>
-          <Route exact path="/">
-            {isAuthorized ? <Redirect to="/player" /> : <Login />}
-          </Route>
-          <Route exact path="/player">
-            <Player />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-      </Box>
-    </Router>
+    <Box bg="spotifyDarkGray" h="100vh">
+      {accessToken ? <Player accessToken={accessToken} /> : <Login />}
+    </Box>
   );
 }
 

@@ -1,15 +1,6 @@
 import axios from 'axios';
 import { Album } from 'common';
 
-export async function fetchAuthStatus(): Promise<string> {
-  try {
-    const response = await axios.get<string>('/api/auth');
-    return response.data;
-  } catch {
-    throw new Error("Can't connect to server");
-  }
-}
-
 export async function fetchAccessToken(): Promise<string> {
   try {
     const response = await axios.get<string>('/api/auth/token', {

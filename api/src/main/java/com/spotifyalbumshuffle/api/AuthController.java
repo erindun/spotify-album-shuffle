@@ -23,12 +23,6 @@ public class AuthController {
             .scope("streaming,user-read-email,user-read-private,user-library-read,user-library-modify,user-read-playback-state,user-modify-playback-state")
             .build();
 
-    @GetMapping("/api/auth")
-    public boolean isAuthorized(HttpServletRequest req) {
-        // TODO
-        return false;
-    }
-
     @GetMapping("/api/auth/code-uri")
     public URI getAuthorizationCodeUri() {
         return authorizationCodeUriRequest.execute();
@@ -41,7 +35,7 @@ public class AuthController {
         session.setAttribute("accessToken", authorizationCodeCredentials.getAccessToken());
         session.setAttribute("refreshToken", authorizationCodeCredentials.getRefreshToken());
         session.setAttribute("expiresIn", authorizationCodeCredentials.getExpiresIn());
-        return new RedirectView("http://localhost:3000/player");
+        return new RedirectView("http://localhost:3000");
     }
 
     @GetMapping("/api/auth/token")
