@@ -9,7 +9,7 @@ function App(): JSX.Element {
   if (isLoading) return <Spinner />;
 
   return (
-    <Box bg="spotifyDarkGray" h="100vh">
+    <Box h="100vh">
       {accessToken ? <Player accessToken={accessToken} /> : <Login />}
     </Box>
   );
