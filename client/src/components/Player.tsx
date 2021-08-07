@@ -5,7 +5,6 @@ import { RepeatIcon } from '@chakra-ui/icons';
 import SpotifyPlayer, { CallbackState } from 'react-spotify-web-playback';
 import { fetchAlbumsList, logout } from '../utils/api';
 import { useLocalStorage } from '../utils/hooks';
-import { Album } from 'common';
 import { shuffle } from '../utils';
 import { useQuery, useQueryClient } from 'react-query';
 import { AlbumInfo } from './AlbumInfo';

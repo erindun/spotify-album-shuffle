@@ -1,5 +1,4 @@
 import { Text, Image, Box, BoxProps } from '@chakra-ui/react';
-import { Album } from 'common';
 
 interface AlbumInfoProps extends BoxProps {
   album: Album;

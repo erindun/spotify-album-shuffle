@@ -1,5 +1,3 @@
-import { Album } from 'common';
-
 /** Fetch the current user's Spotify API access token. */
 export async function fetchAccessToken(): Promise<string> {
   try {
