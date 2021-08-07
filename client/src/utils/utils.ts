@@ -1,5 +1,29 @@
 import { useState } from 'react';
+import { useQuery, UseQueryResult } from 'react-query';
+import { fetchAccessToken } from './api';
 
+/** Shuffles an array in-place. */
+export function shuffle<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/** Query hook for {@link fetchAccessToken}. */
+export function useAccessToken(): UseQueryResult<string, Error> {
+  return useQuery<string, Error>('accessToken', () => fetchAccessToken(), {
+    refetchInterval: (1000 * 3600) / 2, // 30 minutes
+    refetchIntervalInBackground: true,
+  });
+}
+
+/**
+ * Persists `useState` value in `localStorage`.
+ *
+ * from https://usehooks.com/useLocalStorage/
+ **/
 export function useLocalStorage<T>(
   key: string,
   initialValue: T
